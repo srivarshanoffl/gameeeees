@@ -66,6 +66,20 @@ class ThorHammerGame extends GameEngine {
     this.traitorImages[1].src = 'assets/traitor2.png';
     this.traitorImages[2].src = 'assets/traitor3.png';
 
+    // Realistic Asgardian Civilian character assets
+    this.civilianImages = [
+      new Image(),
+      new Image(),
+      new Image()
+    ];
+    this.civilianImages[0].src = 'assets/civilian1.png';
+    this.civilianImages[1].src = 'assets/civilian2.png';
+    this.civilianImages[2].src = 'assets/civilian3.png';
+
+    // High-Fidelity Metallic Uru Mjölnir Hammer Sprite
+    this.mjolnirImg = new Image();
+    this.mjolnirImg.src = 'assets/mjolnir_highres.png';
+
     this.activeStrikes = [];
     this.groundY = window.innerHeight * 0.82;
 
@@ -869,13 +883,13 @@ class ThorHammerGame extends GameEngine {
 
       ctx.drawImage(this.bgImg, drawX, drawY, drawW, drawH);
 
-      // Subtle atmospheric vignette & ground depth
-      const groundFog = ctx.createLinearGradient(0, this.groundY - 140, 0, this.vHeight);
+      // Atmospheric ground fog blending character feet with fractured bedrock
+      const groundFog = ctx.createLinearGradient(0, this.groundY - 60, 0, this.vHeight);
       groundFog.addColorStop(0, 'rgba(4, 7, 16, 0)');
-      groundFog.addColorStop(0.5, 'rgba(4, 7, 16, 0.45)');
-      groundFog.addColorStop(1, 'rgba(3, 5, 12, 0.85)');
+      groundFog.addColorStop(0.5, 'rgba(4, 7, 16, 0.28)');
+      groundFog.addColorStop(1, 'rgba(2, 4, 10, 0.65)');
       ctx.fillStyle = groundFog;
-      ctx.fillRect(0, this.groundY - 140, this.vWidth, this.vHeight - (this.groundY - 140));
+      ctx.fillRect(0, this.groundY - 60, this.vWidth, this.vHeight - (this.groundY - 60));
 
     } else {
       // Fallback procedural sky gradient
@@ -1128,7 +1142,8 @@ class ThorHammerGame extends GameEngine {
   // CAPTURED CIVILIANS RENDERING (IN FRONT AS SHIELDS, ZERO TEXT)
   // ===========================================================================
   drawCivilians(ctx) {
-    for (const civ of this.civilians) {
+    for (let i = 0; i < this.civilians.length; i++) {
+      const civ = this.civilians[i];
       if (civ.fade <= 0) continue;
 
       ctx.save();
@@ -1137,66 +1152,91 @@ class ThorHammerGame extends GameEngine {
 
       const bob = Math.sin(this.lightningTimer * 4 + civ.x) * 2;
 
-      // Soft ground shadow
+      // Soft ground ambient occlusion shadow
       ctx.save();
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.72)';
       ctx.beginPath();
-      ctx.ellipse(0, 4, 32, 9, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, 8, 36, 11, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
 
-      // Protective emerald captive aura
+      // Bifrost Celestial Evacuation Beam (when evacuating)
+      if (civ.evacuating) {
+        ctx.save();
+        const beamW = 76 + Math.sin(this.lightningTimer * 20) * 12;
+        const beamGrad = ctx.createLinearGradient(0, -this.vHeight, 0, 10);
+        beamGrad.addColorStop(0, 'rgba(255, 215, 0, 0.9)');
+        beamGrad.addColorStop(0.35, 'rgba(0, 240, 255, 0.75)');
+        beamGrad.addColorStop(0.7, 'rgba(160, 220, 255, 0.45)');
+        beamGrad.addColorStop(1, 'rgba(0, 240, 255, 0)');
+        ctx.fillStyle = beamGrad;
+        ctx.fillRect(-beamW / 2, -this.vHeight, beamW, this.vHeight + 10);
+
+        // Core white beam
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+        ctx.fillRect(-beamW * 0.25, -this.vHeight, beamW * 0.5, this.vHeight + 10);
+
+        // Rising golden Bifrost particles
+        ctx.fillStyle = '#ffd700';
+        for (let p = 0; p < 7; p++) {
+          const py = (-((this.lightningTimer * 300 + p * 55) % (this.vHeight * 0.7)));
+          const px = Math.sin(p * 2 + this.lightningTimer * 6) * (beamW * 0.35);
+          ctx.beginPath();
+          ctx.arc(px, py, 2.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      // Protective captive aura
       const pulse = Math.sin(this.lightningTimer * 5) * 3;
-      const haloGrad = ctx.createRadialGradient(0, -20, 10, 0, -20, civ.r + 26 + pulse);
-      haloGrad.addColorStop(0, 'rgba(0, 255, 136, 0.35)');
-      haloGrad.addColorStop(0.6, 'rgba(255, 210, 0, 0.2)');
-      haloGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      const haloGrad = ctx.createRadialGradient(0, -42, 10, 0, -42, civ.r + 32 + pulse);
+      if (civ.evacuating) {
+        haloGrad.addColorStop(0, 'rgba(255, 215, 0, 0.45)');
+        haloGrad.addColorStop(0.6, 'rgba(0, 240, 255, 0.3)');
+        haloGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      } else {
+        haloGrad.addColorStop(0, 'rgba(255, 23, 68, 0.28)');
+        haloGrad.addColorStop(0.6, 'rgba(255, 138, 128, 0.16)');
+        haloGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      }
       ctx.fillStyle = haloGrad;
       ctx.beginPath();
-      ctx.arc(0, -20, civ.r + 26 + pulse, 0, Math.PI * 2);
+      ctx.arc(0, -42, civ.r + 32 + pulse, 0, Math.PI * 2);
       ctx.fill();
 
       // Captive energy bond rings
-      ctx.strokeStyle = civ.evacuating ? '#00f0ff' : 'rgba(255, 23, 68, 0.65)';
-      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = civ.evacuating ? '#00f0ff' : 'rgba(255, 23, 68, 0.8)';
+      ctx.lineWidth = 2.8;
       ctx.shadowColor = civ.evacuating ? '#00f0ff' : '#ff1744';
-      ctx.shadowBlur = 12;
+      ctx.shadowBlur = 14;
       ctx.beginPath();
-      ctx.ellipse(0, -22 + bob, civ.r + 10, 14, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, -36 + bob, civ.r + 14, 15, 0, 0, Math.PI * 2);
       ctx.stroke();
 
-      // Civilian Body (Tunic)
-      ctx.fillStyle = civ.tunicColor;
-      ctx.beginPath();
-      ctx.moveTo(-16, 8 + bob);
-      ctx.lineTo(-20, -24 + bob);
-      ctx.lineTo(20, -24 + bob);
-      ctx.lineTo(16, 8 + bob);
-      ctx.closePath();
-      ctx.fill();
-
-      // Golden Belt
-      ctx.fillStyle = '#ffd200';
-      ctx.fillRect(-12, -8 + bob, 24, 4);
-
-      // Head
-      ctx.fillStyle = '#ffe0b2';
-      ctx.beginPath();
-      ctx.arc(0, -36 + bob, 14, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Hair
-      ctx.fillStyle = civ.hairColor;
-      ctx.beginPath();
-      ctx.arc(0, -40 + bob, 14, Math.PI, Math.PI * 2);
-      ctx.fill();
-
-      // Gentle face
-      ctx.fillStyle = '#334155';
-      ctx.fillRect(-5, -38 + bob, 3, 3);
-      ctx.fillRect(2, -38 + bob, 3, 3);
-
-      // (NO IN-CANVAS TEXT DISPLAYED — CLEAN CINEMATIC LOOK)
+      // REALISTIC ASGARDIAN CIVILIAN CHARACTER SPRITE
+      const cImg = this.civilianImages[i % this.civilianImages.length];
+      if (cImg && cImg.complete && cImg.naturalWidth > 0) {
+        const drawW = 76;
+        const drawH = 114;
+        ctx.drawImage(cImg, -drawW / 2, -drawH + 16 + bob, drawW, drawH);
+      } else {
+        // High-quality fallback rendering
+        ctx.fillStyle = civ.tunicColor;
+        ctx.beginPath();
+        ctx.moveTo(-16, 8 + bob);
+        ctx.lineTo(-20, -24 + bob);
+        ctx.lineTo(20, -24 + bob);
+        ctx.lineTo(16, 8 + bob);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = '#ffd200';
+        ctx.fillRect(-12, -8 + bob, 24, 4);
+        ctx.fillStyle = '#ffe0b2';
+        ctx.beginPath();
+        ctx.arc(0, -36 + bob, 14, 0, Math.PI * 2);
+        ctx.fill();
+      }
 
       ctx.restore();
     }
@@ -1373,41 +1413,44 @@ class ThorHammerGame extends GameEngine {
       const haloColor = this.hammer.state === 'RETURNING' ? '#ffd200' : '#00f0ff';
       ctx.fillStyle = haloColor;
       ctx.shadowColor = haloColor;
-      ctx.shadowBlur = 26;
+      ctx.shadowBlur = 30;
       ctx.beginPath();
-      ctx.arc(0, 0, this.hammer.radius + 14, 0, Math.PI * 2);
+      ctx.arc(0, 0, this.hammer.radius + 16, 0, Math.PI * 2);
       ctx.fill();
+
+      // Sharp spinning plasma arcs while flying
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let a = 0; a < 4; a++) {
+        const ang = (a * Math.PI / 2) + this.lightningTimer * 12;
+        const r1 = this.hammer.radius + 6;
+        const r2 = this.hammer.radius + 24;
+        ctx.moveTo(Math.cos(ang) * r1, Math.sin(ang) * r1);
+        ctx.lineTo(Math.cos(ang + 0.3) * (r1 + r2) / 2, Math.sin(ang + 0.3) * (r1 + r2) / 2);
+        ctx.lineTo(Math.cos(ang) * r2, Math.sin(ang) * r2);
+      }
+      ctx.stroke();
     } else {
       ctx.shadowColor = '#00f0ff';
-      ctx.shadowBlur = 10;
+      ctx.shadowBlur = 14;
     }
 
-    // Wooden Handle & Leather Wrapping
-    ctx.fillStyle = '#4a2e18';
-    ctx.fillRect(-5, -5, 10, 32);
-    ctx.strokeStyle = '#c8a064';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(-5, 4); ctx.lineTo(5, 8);
-    ctx.moveTo(-5, 14); ctx.lineTo(5, 18);
-    ctx.moveTo(-5, 24); ctx.lineTo(5, 28);
-    ctx.stroke();
-
-    // Pommel
-    ctx.fillStyle = '#888';
-    ctx.fillRect(-6, 27, 12, 5);
-
-    // Uru Metal Hammer Head
-    ctx.fillStyle = '#8395a7';
-    ctx.fillRect(-18, -16, 36, 24);
-    ctx.fillStyle = '#a4b0be';
-    ctx.fillRect(-15, -13, 30, 10);
-
-    // Central Norse Rune
-    ctx.fillStyle = '#00f0ff';
-    ctx.shadowColor = '#00f0ff';
-    ctx.shadowBlur = 10;
-    ctx.fillRect(-5, -9, 10, 10);
+    // High-Resolution Metallic Uru Mjölnir Sprite
+    if (this.mjolnirImg && this.mjolnirImg.complete && this.mjolnirImg.naturalWidth > 0) {
+      const drawW = 52;
+      const drawH = 70;
+      // Position hammer head centered on coordinates
+      ctx.drawImage(this.mjolnirImg, -drawW / 2, -drawH * 0.28, drawW, drawH);
+    } else {
+      // High-quality fallback rendering
+      ctx.fillStyle = '#4a2e18';
+      ctx.fillRect(-5, -5, 10, 32);
+      ctx.fillStyle = '#8395a7';
+      ctx.fillRect(-18, -16, 36, 24);
+      ctx.fillStyle = '#00f0ff';
+      ctx.fillRect(-5, -9, 10, 10);
+    }
 
     ctx.restore();
   }
