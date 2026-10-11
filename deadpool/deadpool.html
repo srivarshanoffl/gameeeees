@@ -50,6 +50,17 @@
             will-change: transform
         }
 
+        #labBackdrop {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 38%, rgba(6, 16, 36, 0.22) 0%, rgba(2, 4, 10, 0.82) 100%),
+                        url('assets/lab_bg.jpg') center 40% / cover no-repeat;
+            opacity: 0.94;
+            filter: brightness(0.72) contrast(1.22) saturate(1.15);
+            pointer-events: none;
+            z-index: 0
+        }
+
         #env,
         #linkSvg,
         #fx {
@@ -212,7 +223,8 @@
         .charImg {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            display: block;
+            object-fit: fill;
             object-position: bottom center;
             filter: drop-shadow(0 0 16px rgba(220, 38, 56, .4));
             transition: filter .25s ease
@@ -1030,6 +1042,7 @@
 <body>
     <div id="stage">
         <div id="stageInner">
+            <div id="labBackdrop"></div>
             <svg id="env"></svg>
             <div id="smokeBack">
                 <div class="smoke sb1"></div>
@@ -1424,13 +1437,14 @@
 
             // Sizing calibrated to the high-res movie image aspect ratios
             // Deadpool: 977 x 620 (ratio 1.5758)
-            // Wolverine: 1024 x 456 (ratio 2.2456)
+            // Deadpool: 1067 x 660 (ratio 1.6167)
+            // Wolverine: 1240 x 456 (ratio 2.7193)
             const availableSpan = (W * 0.915) - (W * 0.085);
             const targetSpan = availableSpan * 0.74;
-            const dpRatio = 977 / 620;
-            const wolvRatio = 1024 / 456;
+            const dpRatio = 1067 / 660;
+            const wolvRatio = 1240 / 456;
 
-            const dpH = Math.min(H * 0.46, (targetSpan - 8) / (0.96 * dpRatio + 0.94 * wolvRatio * 0.97));
+            const dpH = Math.min(H * 0.46, (targetSpan - 8) / (0.963 * dpRatio + 0.992 * wolvRatio * 0.94));
             const dpW = dpH * dpRatio;
             const wolH = dpH * 0.94;
             const wolW = wolH * wolvRatio;
@@ -1438,11 +1452,13 @@
             const charBottom = H * 0.885;
             const claspX = W * 0.485;
 
-            const dpLeft = claspX - dpW * 0.975;
+            const dpLeft = claspX - dpW * 0.963;
             const dpTop = charBottom - dpH;
 
-            const wolLeft = claspX - wolW * 0.025;
-            const wolTop = charBottom - wolH;
+            // Align Wolverine's hand Y to Deadpool's hand Y exactly:
+            const claspY = dpTop + dpH * 0.521;
+            const wolLeft = claspX - wolW * 0.012;
+            const wolTop = claspY - wolH * 0.602;
 
             dpEl.style.left = dpLeft + 'px';
             dpEl.style.top = dpTop + 'px';
@@ -1463,17 +1479,21 @@
             $('wolvShadow').style.width = (wolW * 0.55) + 'px';
 
             // Precise hand and body anchors matching the actors in the photo cutouts
-            A.dpL = { x: dpLeft + dpW * 0.04, y: dpTop + dpH * 0.62 };
-            A.dpR = { x: dpLeft + dpW * 0.965, y: dpTop + dpH * 0.54 };
-            A.dpBody = { x: dpLeft + dpW * 0.56, y: dpTop + dpH * 0.48 };
+            A.dpL = { x: dpLeft + dpW * 0.005, y: dpTop + dpH * 0.667 };
+            A.dpR = { x: dpLeft + dpW * 0.963, y: dpTop + dpH * 0.521 };
+            A.dpBody = { x: dpLeft + dpW * 0.52, y: dpTop + dpH * 0.50 };
 
-            A.wolL = { x: wolLeft + wolW * 0.035, y: wolTop + wolH * 0.58 };
-            A.wolR = { x: wolLeft + wolW * 0.97, y: wolTop + wolH * 0.52 };
-            A.wolBody = { x: wolLeft + wolW * 0.51, y: wolTop + wolH * 0.48 };
+            A.wolL = { x: wolLeft + wolW * 0.012, y: wolTop + wolH * 0.602 };
+            A.wolR = { x: wolLeft + wolW * 0.992, y: wolTop + wolH * 0.616 };
+            A.wolBody = { x: wolLeft + wolW * 0.50, y: wolTop + wolH * 0.52 };
 
-            A.coreL = { x: W * 0.085, y: H * 0.44 }; A.coreR = { x: W * 0.915, y: H * 0.45 };
+            // Elevated emitter terminals on sci-fi pylon towers
+            A.coreL = { x: W * 0.085, y: H * 0.30 };
+            A.coreR = { x: W * 0.915, y: H * 0.28 };
             A.machine = { x: W * 0.5, y: H * 0.36 }; A.mTop = H * 0.245; A.groundY = H * 0.875;
-            A.linkRest = A.dpR.x + W * 0.15; A.linkFinal = A.wolR.x + 8;
+            // Right-side electrical ray discharges diagonally downward into deck containment area first
+            A.linkRest = { x: W * 0.72, y: H * 0.74 };
+            A.linkFinal = A.wolR.x;
             if (linkEndX === 0 || linkEndX > A.coreR.x) linkEndX = A.coreR.x - 10;
 
             dpEl._rimB = dpEl.querySelector('.rimB'); dpEl._rimR = dpEl.querySelector('.rimR');
@@ -1492,8 +1512,8 @@
                 const g = mkEl(NS, type, { id, ...attrs }, defs);
                 stops.forEach(st => mkEl(NS, 'stop', { ...st }, g));
             };
-            grad('sky', 'linearGradient', { x1: 0, y1: 0, x2: 0, y2: 1 },
-                [{ offset: 0, 'stop-color': '#05070c' }, { offset: .45, 'stop-color': '#0b1019' }, { offset: 1, 'stop-color': '#121826' }]);
+            grad('labVignette', 'radialGradient', { cx: '50%', cy: '40%', r: '65%' },
+                [{ offset: 0, 'stop-color': '#060d1b', 'stop-opacity': 0.15 }, { offset: 0.6, 'stop-color': '#03060d', 'stop-opacity': 0.5 }, { offset: 1, 'stop-color': '#010307', 'stop-opacity': 0.85 }]);
             grad('floorG', 'linearGradient', { x1: 0, y1: 0, x2: 0, y2: 1 },
                 [{ offset: 0, 'stop-color': '#161c2a' }, { offset: .25, 'stop-color': '#0b0e16' }, { offset: 1, 'stop-color': '#04050a' }]);
             grad('mCoreG', 'radialGradient', {}, [
@@ -1504,107 +1524,238 @@
                 { offset: 1, 'stop-color': '#5aa8ff', 'stop-opacity': 0 }]);
             grad('poolB', 'radialGradient', {}, [{ offset: 0, 'stop-color': '#7fc4ff', 'stop-opacity': .34 }, { offset: 1, 'stop-color': '#7fc4ff', 'stop-opacity': 0 }]);
             grad('poolR', 'radialGradient', {}, [{ offset: 0, 'stop-color': '#ff4a52', 'stop-opacity': .24 }, { offset: 1, 'stop-color': '#ff4a52', 'stop-opacity': 0 }]);
-            grad('hazeG', 'radialGradient', {}, [{ offset: 0, 'stop-color': '#1b2436', 'stop-opacity': .55 }, { offset: 1, 'stop-color': '#1b2436', 'stop-opacity': 0 }]);
+            grad('beamGlow', 'linearGradient', { x1: 0, y1: 0, x2: 0, y2: 1 },
+                [{ offset: 0, 'stop-color': '#38bdf8', 'stop-opacity': 0.35 }, { offset: 0.5, 'stop-color': '#0284c7', 'stop-opacity': 0.15 }, { offset: 1, 'stop-color': '#0284c7', 'stop-opacity': 0 }]);
+            grad('downlightGrad', 'linearGradient', { x1: 0, y1: 0, x2: 0, y2: 1 },
+                [{ offset: 0, 'stop-color': '#38bdf8', 'stop-opacity': 0.18 }, { offset: 1, 'stop-color': '#0ea5e9', 'stop-opacity': 0 }]);
 
-            mkEl(NS, 'rect', { x: 0, y: 0, width: W, height: H, fill: 'url(#sky)' });
-            mkEl(NS, 'ellipse', { cx: MX, cy: H * 0.42, rx: W * 0.56, ry: H * 0.44, fill: 'url(#hazeG)' });
+            // Soft lab atmosphere vignette
+            mkEl(NS, 'rect', { x: 0, y: 0, width: W, height: H, fill: 'url(#labVignette)' });
 
-            const skyline = (baseY, col, seed, windows) => {
-                const g = mkEl(NS, 'g', { fill: col }); let x = -40, sd = seed;
-                const rn = () => { sd = (sd * 16807) % 2147483647; return sd / 2147483647; };
-                while (x < W + 40) {
-                    const w = 30 + rn() * 95, h = 40 + rn() * 160;
-                    mkEl(NS, 'rect', { x: x, y: baseY - h, width: w, height: h + 4 }, g);
-                    if (rn() < 0.4) mkEl(NS, 'rect', { x: x + w * 0.3, y: baseY - h - 14 - rn() * 24, width: 6, height: 24 }, g);
-                    if (rn() < 0.35) mkEl(NS, 'path', { d: `M${x} ${baseY - h} h${w} M${x + w * 0.5} ${baseY - h} V${baseY - h * 0.45}`, stroke: col, 'stroke-width': 2, fill: 'none' }, g);
-                    if (windows && rn() < 0.55) {
-                        const wg = mkEl(NS, 'g', { fill: '#8a6a3a', opacity: .28 });
-                        for (let k = 0; k < 3; k++) mkEl(NS, 'rect', { x: x + 4 + rn() * (w - 10), y: baseY - h + 6 + rn() * (h - 16), width: 3, height: 4 }, wg);
-                    }
-                    x += w + 8 + rn() * 60;
-                }
-            };
-            skyline(H * 0.66, '#0e121a', 7919, true); skyline(H * 0.72, '#080b10', 104729, false);
+            // ===== Overhead Architectural Gantry & Suspended Cable Trays =====
+            const gantryG = mkEl(NS, 'g', { opacity: 0.9 });
+            mkEl(NS, 'rect', { x: 0, y: 0, width: W, height: H * 0.045, fill: '#0a0e16', stroke: '#1e293b', 'stroke-width': 1.5 }, gantryG);
+            mkEl(NS, 'rect', { x: 0, y: H * 0.045, width: W, height: H * 0.015, fill: '#0f172a', stroke: '#334155', 'stroke-width': 1 }, gantryG);
+            // Heavy ceiling structural trusses
+            for (let bx = W * 0.06; bx < W; bx += W * 0.16) {
+                mkEl(NS, 'path', {
+                    d: `M${bx - W * 0.04} 0 L${bx} ${H * 0.06} L${bx + W * 0.04} 0`,
+                    fill: 'none', stroke: '#1e293b', 'stroke-width': 2.5
+                }, gantryG);
+                // Suspended luminaire downlight fixtures
+                mkEl(NS, 'rect', { x: bx - 16, y: H * 0.055, width: 32, height: 6, fill: '#0284c7', rx: 2 }, gantryG);
+                mkEl(NS, 'polygon', {
+                    points: `${bx - 14},${H * 0.061} ${bx + 14},${H * 0.061} ${bx + 48},${H * 0.35} ${bx - 48},${H * 0.35}`,
+                    fill: 'url(#downlightGrad)'
+                }, gantryG);
+            }
+            // Overhead high-voltage plasma trunk bus
+            mkEl(NS, 'line', { x1: 0, y1: H * 0.03, x2: W, y2: H * 0.03, stroke: '#38bdf8', 'stroke-width': 2.5, opacity: 0.65 }, gantryG);
 
-            // ===== villain machine =====
+            // ===== villain machine (Time Ripper Experimental Reactor) =====
             const mg = mkEl(NS, 'g', { id: 'machine' });
             const top = A.mTop, base = H * 0.765;
-            mkEl(NS, 'rect', { x: MX - W * 0.165, y: base, width: W * 0.33, height: H * 0.038, fill: '#0c1018', stroke: '#222c40', 'stroke-width': 1.5 }, mg);
-            mkEl(NS, 'path', { d: `M${MX - W * 0.075} ${base} L${MX - W * 0.05} ${top} L${MX + W * 0.05} ${top} L${MX + W * 0.075} ${base} Z`, fill: '#0e1320', stroke: '#28344c', 'stroke-width': 1.8 }, mg);
-            mkEl(NS, 'rect', { x: MX - W * 0.105, y: H * 0.34, width: W * 0.022, height: H * 0.41, fill: '#0c111b', stroke: '#1e2940' }, mg);
-            mkEl(NS, 'rect', { x: MX + W * 0.083, y: H * 0.34, width: W * 0.022, height: H * 0.41, fill: '#0c111b', stroke: '#1e2940' }, mg);
-            mkEl(NS, 'path', { d: `M${MX - W * 0.075} ${base} L${MX - W * 0.05} ${top} L${MX - W * 0.045} ${base} Z`, fill: '#131a29', opacity: .8 }, mg);
-            mkEl(NS, 'path', { d: `M${MX + W * 0.075} ${base} L${MX + W * 0.05} ${top} L${MX + W * 0.045} ${base} Z`, fill: '#131a29', opacity: .8 }, mg);
+            
+            // Sub-base foundation plinth
+            mkEl(NS, 'rect', { x: MX - W * 0.18, y: base, width: W * 0.36, height: H * 0.038, fill: '#0b0f17', stroke: '#1e293b', 'stroke-width': 2, rx: 2 }, mg);
+            // Main tapered armor housing structure
+            mkEl(NS, 'path', { d: `M${MX - W * 0.09} ${base} L${MX - W * 0.06} ${top} L${MX + W * 0.06} ${top} L${MX + W * 0.09} ${base} Z`, fill: '#0d131f', stroke: '#283548', 'stroke-width': 2 }, mg);
+            
+            // High-detail 3D sci-fi quantum reactor apparatus housing
+            const mHw = W * 0.165;
+            mkEl(NS, 'image', {
+                href: 'assets/machine_housing.png',
+                x: MX - mHw, y: top - H * 0.035,
+                width: mHw * 2, height: (base - top) + H * 0.08,
+                preserveAspectRatio: 'xMidYMid meet'
+            }, mg);
+
+            // Twin vertical cooling stanchions
+            mkEl(NS, 'rect', { x: MX - W * 0.125, y: H * 0.32, width: W * 0.028, height: H * 0.44, fill: '#090d15', stroke: '#1e293b', 'stroke-width': 1.6, rx: 2 }, mg);
+            mkEl(NS, 'rect', { x: MX + W * 0.097, y: H * 0.32, width: W * 0.028, height: H * 0.44, fill: '#090d15', stroke: '#1e293b', 'stroke-width': 1.6, rx: 2 }, mg);
+            
+            // Neon vertical coolant conduits on stanchions
+            mkEl(NS, 'line', { x1: MX - W * 0.111, y1: H * 0.34, x2: MX - W * 0.111, y2: H * 0.74, stroke: '#38bdf8', 'stroke-width': 2.5, opacity: 0.75 }, mg);
+            mkEl(NS, 'line', { x1: MX + W * 0.111, y1: H * 0.34, x2: MX + W * 0.111, y2: H * 0.74, stroke: '#38bdf8', 'stroke-width': 2.5, opacity: 0.75 }, mg);
+
+            // Shading facets
+            mkEl(NS, 'path', { d: `M${MX - W * 0.09} ${base} L${MX - W * 0.06} ${top} L${MX - W * 0.05} ${base} Z`, fill: '#161f30', opacity: .8 }, mg);
+            mkEl(NS, 'path', { d: `M${MX + W * 0.09} ${base} L${MX + W * 0.06} ${top} L${MX + W * 0.05} ${base} Z`, fill: '#161f30', opacity: .8 }, mg);
+
+            // Animated heat vents
             E.vents = [];
             [0.40, 0.50, 0.60].forEach(f => {
-                mkEl(NS, 'rect', { x: MX - W * 0.062, y: H * f, width: W * 0.124, height: H * 0.012, fill: '#17202f', stroke: '#2b3a55', 'stroke-width': 1 }, mg);
-                E.vents.push(mkEl(NS, 'rect', { x: MX - W * 0.052, y: H * f + H * 0.0035, width: W * 0.104, height: 3, fill: '#ff9a46', opacity: 0, class: 'vent' }, mg));
+                mkEl(NS, 'rect', { x: MX - W * 0.068, y: H * f, width: W * 0.136, height: H * 0.014, fill: '#131b28', stroke: '#2d3c52', 'stroke-width': 1.2, rx: 1.5 }, mg);
+                E.vents.push(mkEl(NS, 'rect', { x: MX - W * 0.058, y: H * f + H * 0.0035, width: W * 0.116, height: 4, fill: '#ff9a46', opacity: 0, class: 'vent', rx: 1 }, mg));
             });
-            const cy = H * 0.355, cr = W * 0.05;
-            mkEl(NS, 'circle', { cx: MX, cy: cy, r: cr * 1.45, fill: '#0a0e16', stroke: '#2a3850', 'stroke-width': 6 }, mg);
-            mkEl(NS, 'circle', { cx: MX, cy: cy, r: cr * 1.02, fill: 'none', stroke: '#31405e', 'stroke-width': 2.4, 'stroke-dasharray': '12 8', class: 'spin' }, mg);
-            mkEl(NS, 'circle', { cx: MX, cy: cy, r: cr * 0.8, fill: 'none', stroke: '#263450', 'stroke-width': 1.6, 'stroke-dasharray': '4 6' }, mg);
+
+            // Central concentric experimental reactor core
+            const cy = H * 0.355, cr = W * 0.052;
+            // Heavy outer containment ring
+            mkEl(NS, 'circle', { cx: MX, cy: cy, r: cr * 1.58, fill: '#070a10', stroke: '#1e293b', 'stroke-width': 7 }, mg);
+            mkEl(NS, 'circle', { cx: MX, cy: cy, r: cr * 1.54, fill: 'none', stroke: '#38bdf8', 'stroke-width': 1.4, opacity: 0.4 }, mg);
+            
+            // High-detail rotating concentric reactor core image
+            mkEl(NS, 'image', {
+                href: 'assets/reactor_core.png',
+                x: MX - cr * 1.48, y: cy - cr * 1.48,
+                width: cr * 2.96, height: cr * 2.96,
+                class: 'spin'
+            }, mg);
+
+            // Counter-rotating magnetic field ring
+            mkEl(NS, 'circle', {
+                cx: MX, cy: cy, r: cr * 1.15,
+                fill: 'none', stroke: '#60a5fa', 'stroke-width': 2.6,
+                'stroke-dasharray': '14 10', class: 'spin',
+                style: 'animation-duration: 6s; animation-direction: reverse'
+            }, mg);
+
+            // Inner antimatter containment chamber
             E.mCore = mkEl(NS, 'g', { id: 'mCore', opacity: .16 }, mg);
-            mkEl(NS, 'circle', { cx: MX, cy: cy, r: cr * 1.2, fill: 'url(#mCoreG)' }, E.mCore);
-            mkEl(NS, 'circle', { cx: MX, cy: cy, r: cr * 0.24, fill: '#eef7ff' }, E.mCore);
-            mkEl(NS, 'path', { d: `M${MX - W * 0.012} ${top} L${MX} ${H * 0.20} L${MX + W * 0.012} ${top} Z`, fill: '#0e1320' }, mg);
-            mkEl(NS, 'circle', { cx: MX, cy: H * 0.197, r: 4, fill: '#ff3347', class: 'blink', style: 'animation-delay:1.1s' }, mg);
+            mkEl(NS, 'circle', { cx: MX, cy: cy, r: cr * 1.25, fill: 'url(#mCoreG)' }, E.mCore);
+            mkEl(NS, 'circle', { cx: MX, cy: cy, r: cr * 0.32, fill: '#ffffff' }, E.mCore);
+
+            // Top spire emitter
+            mkEl(NS, 'path', { d: `M${MX - W * 0.015} ${top} L${MX} ${H * 0.19} L${MX + W * 0.015} ${top} Z`, fill: '#0c121e', stroke: '#233044', 'stroke-width': 1.5 }, mg);
+            mkEl(NS, 'circle', { cx: MX, cy: H * 0.187, r: 4.5, fill: '#ff3347', class: 'blink', style: 'animation-delay:1.1s' }, mg);
             [[0.33, 0.35], [0.47, 0.62], [0.57, 0.2]].forEach((d, i) => {
-                mkEl(NS, 'circle', { cx: MX + (i - 1) * W * 0.004, cy: H * d[1], r: 3.4, fill: '#ff3347', class: 'blink', style: `animation-delay:${(i * 0.9).toFixed(1)}s` }, mg);
+                mkEl(NS, 'circle', { cx: MX + (i - 1) * W * 0.005, cy: H * d[1], r: 3.5, fill: '#ff3347', class: 'blink', style: `animation-delay:${(i * 0.9).toFixed(1)}s` }, mg);
             });
+
+            // High-voltage plasma conduits linking reactor to side emitter columns
             E.cables = [];
             [[TL, -1], [TR, 1]].forEach(d => {
                 const x = d[0], sd = d[1];
                 E.cables.push(mkEl(NS, 'path', {
                     class: 'cable',
-                    d: `M${MX - sd * W * 0.072} ${H * 0.30} C ${MX - sd * W * 0.2} ${H * 0.37}, ${x + sd * W * 0.09} ${H * 0.315}, ${x + sd * 9} ${H * 0.225}`
+                    d: `M${MX - sd * W * 0.075} ${H * 0.30} C ${MX - sd * W * 0.2} ${H * 0.37}, ${x + sd * W * 0.09} ${H * 0.315}, ${x + sd * 12} ${H * 0.225}`
                 }));
             });
 
-            // ===== signal towers =====
-            const buildTower = (x, side, coreY) => {
+            // ===== Laboratory Plasma Emitter Columns (replacing outdoor towers) =====
+            const buildEmitterColumn = (x, side, coreY) => {
                 const g = mkEl(NS, 'g', {});
-                const topY = H * 0.185, botY = H * 0.80, hw1 = W * 0.012, hw2 = W * 0.032;
+                const topY = H * 0.165, botY = H * 0.80, hw1 = W * 0.016, hw2 = W * 0.038;
                 const hw = f => hw1 + (hw2 - hw1) * f;
-                mkEl(NS, 'path', { d: `M${x - hw2} ${botY} L${x - hw1} ${topY} L${x + hw1} ${topY} L${x + hw2} ${botY} Z`, fill: '#0c1018', stroke: '#243048', 'stroke-width': 1.6 }, g);
-                for (let i = 0; i < 5; i++) {
-                    const f1 = 0.08 + i * 0.16, f2 = f1 + 0.09;
-                    mkEl(NS, 'path', {
-                        d: `M${x - hw(f1)} ${topY + (botY - topY) * f1} L${x + hw(f2)} ${topY + (botY - topY) * f2} M${x + hw(f1)} ${topY + (botY - topY) * f1} L${x - hw(f2)} ${topY + (botY - topY) * f2}`,
-                        stroke: '#1a2334', 'stroke-width': 1.4, fill: 'none'
-                    }, g);
-                }
-                [[0.30], [0.38]].forEach(d => {
-                    const f = d[0];
-                    mkEl(NS, 'rect', { x: x - W * 0.036, y: H * f, width: W * 0.072, height: 5, fill: '#111827' }, g);
-                    mkEl(NS, 'rect', { x: x - W * 0.028, y: H * f - 7, width: 4, height: 7, fill: '#1e2940' }, g);
-                    mkEl(NS, 'rect', { x: x + W * 0.024, y: H * f - 7, width: 4, height: 7, fill: '#1e2940' }, g);
-                });
-                mkEl(NS, 'circle', { cx: x, cy: coreY, r: W * 0.033, fill: 'none', stroke: '#2a3850', 'stroke-width': 3.4, 'stroke-dasharray': '15 9', class: 'spin' }, g);
-                mkEl(NS, 'circle', { cx: x, cy: coreY, r: W * 0.023, fill: 'none', stroke: '#324260', 'stroke-width': 2.2 }, g);
-                const glow = mkEl(NS, 'circle', { cx: x, cy: coreY, r: W * 0.027, fill: 'url(#tCoreG)', opacity: 0 }, g);
-                mkEl(NS, 'circle', { cx: x, cy: coreY, r: 7.5, fill: '#eaf6ff' }, g);
-                mkEl(NS, 'circle', { cx: x, cy: topY - 8, r: 3.8, fill: '#ff3347', class: 'blink', style: 'animation-delay:.6s' }, g);
-                mkEl(NS, 'path', {
-                    d: `M${x} ${topY} C ${x + side * W * 0.01} ${H * 0.14}, ${x + side * W * 0.05} ${H * 0.12}, ${x + side * W * 0.07} ${H * 0.05}`,
-                    stroke: '#1a2334', 'stroke-width': 2.2, fill: 'none'
+
+                // Tapered faceted armor column
+                mkEl(NS, 'path', { d: `M${x - hw2} ${botY} L${x - hw1} ${topY} L${x + hw1} ${topY} L${x + hw2} ${botY} Z`, fill: '#0a0e16', stroke: '#222f44', 'stroke-width': 2 }, g);
+                
+                // High-tech sci-fi plasma emitter column asset
+                const pyW = W * 0.11;
+                const pyH = (botY - topY) + H * 0.08;
+                const pylonImg = mkEl(NS, 'image', {
+                    href: 'assets/pylon_emitter.png',
+                    x: x - pyW * 0.5, y: topY - H * 0.03,
+                    width: pyW, height: pyH,
+                    preserveAspectRatio: 'xMidYMid meet'
                 }, g);
+                if (side < 0) {
+                    pylonImg.setAttribute('transform', `translate(${x * 2}, 0) scale(-1, 1)`);
+                }
+
+                // Vertical cyan energy channel down the spine
+                mkEl(NS, 'line', { x1: x, y1: topY + 12, x2: x, y2: botY - 10, stroke: '#38bdf8', 'stroke-width': 2, opacity: 0.7 }, g);
+
+                // Segmented magnetic choke rings
+                for (let i = 0; i < 5; i++) {
+                    const f1 = 0.08 + i * 0.16;
+                    const yPos = topY + (botY - topY) * f1;
+                    const wPos = hw(f1);
+                    mkEl(NS, 'rect', { x: x - wPos - 4, y: yPos - 3, width: (wPos * 2) + 8, height: 7, fill: '#141d2c', stroke: '#2d3d56', 'stroke-width': 1.2, rx: 1.5 }, g);
+                }
+
+                // Intermediate utility platforms
+                [[0.29], [0.38]].forEach(d => {
+                    const f = d[0];
+                    mkEl(NS, 'rect', { x: x - W * 0.04, y: H * f, width: W * 0.08, height: 6, fill: '#0f172a', stroke: '#283548', rx: 1 }, g);
+                    mkEl(NS, 'rect', { x: x - W * 0.032, y: H * f - 8, width: 5, height: 8, fill: '#1e293b' }, g);
+                    mkEl(NS, 'rect', { x: x + W * 0.026, y: H * f - 8, width: 5, height: 8, fill: '#1e293b' }, g);
+                });
+
+                // Primary focal emitter ring & rotating magnetic collar
+                mkEl(NS, 'circle', { cx: x, cy: coreY, r: W * 0.038, fill: '#070a10', stroke: '#1e293b', 'stroke-width': 5 }, g);
+                mkEl(NS, 'circle', { cx: x, cy: coreY, r: W * 0.034, fill: 'none', stroke: '#38bdf8', 'stroke-width': 3, 'stroke-dasharray': '16 8', class: 'spin' }, g);
+                mkEl(NS, 'circle', { cx: x, cy: coreY, r: W * 0.024, fill: 'none', stroke: '#60a5fa', 'stroke-width': 2 }, g);
+
+                const glow = mkEl(NS, 'circle', { cx: x, cy: coreY, r: W * 0.03, fill: 'url(#tCoreG)', opacity: 0 }, g);
+                mkEl(NS, 'circle', { cx: x, cy: coreY, r: 8, fill: '#eaf6ff' }, g);
+                mkEl(NS, 'circle', { cx: x, cy: topY - 10, r: 4.2, fill: '#ff3347', class: 'blink', style: 'animation-delay:.6s' }, g);
+
+                // Overhead ceiling anchor arm
+                mkEl(NS, 'path', {
+                    d: `M${x} ${topY} C ${x + side * W * 0.015} ${H * 0.12}, ${x + side * W * 0.06} ${H * 0.09}, ${x + side * W * 0.08} ${H * 0.03}`,
+                    stroke: '#243248', 'stroke-width': 4, fill: 'none'
+                }, g);
+                mkEl(NS, 'path', {
+                    d: `M${x} ${topY} C ${x + side * W * 0.015} ${H * 0.12}, ${x + side * W * 0.06} ${H * 0.09}, ${x + side * W * 0.08} ${H * 0.03}`,
+                    stroke: '#38bdf8', 'stroke-width': 1.6, fill: 'none', opacity: 0.6
+                }, g);
+
                 return glow;
             };
-            E.glowL = buildTower(TL, -1, H * 0.44);
-            E.glowR = buildTower(TR, 1, H * 0.45);
+            E.glowL = buildEmitterColumn(TL, -1, A.coreL.y);
+            E.glowR = buildEmitterColumn(TR, 1, A.coreR.y);
 
-            // ===== floor =====
+            // ===== Laboratory Floor =====
             mkEl(NS, 'rect', { x: 0, y: H * 0.78, width: W, height: H * 0.22, fill: 'url(#floorG)' });
+            // Recessed glowing LED tracks
+            mkEl(NS, 'line', { x1: TL, y1: H * 0.78, x2: TL * 0.8, y2: H, stroke: '#38bdf8', 'stroke-width': 2.5, opacity: 0.6 });
+            mkEl(NS, 'line', { x1: TR, y1: H * 0.78, x2: TR * 1.04, y2: H, stroke: '#38bdf8', 'stroke-width': 2.5, opacity: 0.6 });
+
             for (let x = -W * 0.1; x <= W * 1.1; x += W * 0.07) {
                 const xr = MX + (x - MX) * 0.5;
-                mkEl(NS, 'line', { x1: xr, y1: H * 0.78, x2: x, y2: H, stroke: '#182031', 'stroke-width': 1, opacity: .5 });
+                mkEl(NS, 'line', { x1: xr, y1: H * 0.78, x2: x, y2: H, stroke: '#182031', 'stroke-width': 1.2, opacity: .65 });
             }
-            mkEl(NS, 'line', { x1: 0, y1: H * 0.84, x2: W, y2: H * 0.84, stroke: '#131a29', opacity: .6 });
-            mkEl(NS, 'line', { x1: 0, y1: H * 0.92, x2: W, y2: H * 0.92, stroke: '#10151f', opacity: .6 });
-            E.poolL = mkEl(NS, 'ellipse', { cx: TL, cy: H * 0.80, rx: W * 0.055, ry: H * 0.022, fill: 'url(#poolB)', opacity: .25 });
-            E.poolR = mkEl(NS, 'ellipse', { cx: TR, cy: H * 0.80, rx: W * 0.055, ry: H * 0.022, fill: 'url(#poolB)', opacity: .25 });
-            mkEl(NS, 'ellipse', { cx: W * 0.46, cy: H * 0.875, rx: W * 0.15, ry: H * 0.03, fill: 'url(#poolR)', opacity: .55 });
+            mkEl(NS, 'line', { x1: 0, y1: H * 0.84, x2: W, y2: H * 0.84, stroke: '#1e293b', 'stroke-width': 1.4, opacity: .75 });
+            mkEl(NS, 'line', { x1: 0, y1: H * 0.92, x2: W, y2: H * 0.92, stroke: '#16202e', 'stroke-width': 1.4, opacity: .75 });
+
+            E.poolL = mkEl(NS, 'ellipse', { cx: TL, cy: H * 0.80, rx: W * 0.065, ry: H * 0.024, fill: 'url(#poolB)', opacity: .25 });
+            E.poolR = mkEl(NS, 'ellipse', { cx: TR, cy: H * 0.80, rx: W * 0.065, ry: H * 0.024, fill: 'url(#poolB)', opacity: .25 });
+            mkEl(NS, 'ellipse', { cx: W * 0.485, cy: H * 0.875, rx: W * 0.16, ry: H * 0.032, fill: 'url(#poolR)', opacity: .55 });
+        }
+
+        /* ============ dynamic live hand tracking ============ */
+        function updateHandAnchors() {
+            if (!dpImg || !wolvImg || !stageInner) return;
+            const sRect = stageInner.getBoundingClientRect();
+            const scale = cam.z || 1;
+
+            const dpRect = dpImg.getBoundingClientRect();
+            if (dpRect.width > 0) {
+                const dpX = (dpRect.left - sRect.left) / scale;
+                const dpY = (dpRect.top - sRect.top) / scale;
+                const dpW = dpRect.width / scale;
+                const dpH = dpRect.height / scale;
+
+                A.dpL.x = dpX + dpW * 0.005;
+                A.dpL.y = dpY + dpH * 0.667;
+                A.dpR.x = dpX + dpW * 0.963;
+                A.dpR.y = dpY + dpH * 0.521;
+                A.dpBody.x = dpX + dpW * 0.52;
+                A.dpBody.y = dpY + dpH * 0.50;
+            }
+
+            const wRect = wolvImg.getBoundingClientRect();
+            if (wRect.width > 0) {
+                const wX = (wRect.left - sRect.left) / scale;
+                const wY = (wRect.top - sRect.top) / scale;
+                const wW = wRect.width / scale;
+                const wH = wRect.height / scale;
+
+                A.wolL.x = wX + wW * 0.012;
+                A.wolL.y = wY + wH * 0.602;
+                A.wolR.x = wX + wW * 0.992;
+                A.wolR.y = wY + wH * 0.616;
+                A.wolBody.x = wX + wW * 0.50;
+                A.wolBody.y = wY + wH * 0.52;
+            }
+
+            A.linkFinal = A.wolR.x;
+            if (rightOn) {
+                linkEndX = A.wolR.x;
+            }
         }
 
         /* ============ energy ray bridges (left + right + buddy) ============ */
@@ -1623,27 +1774,36 @@
             }
             return d;
         }
+        function getLinkTargetY() {
+            if (rightOn) return A.wolR.y;
+            if (linkEndX <= A.linkRest.x) {
+                const tWolv = Math.max(0, Math.min(1, (A.linkRest.x - linkEndX) / (A.linkRest.x - A.wolR.x || 1)));
+                return lerp(A.linkRest.y, A.wolR.y, tWolv);
+            }
+            const tRest = Math.max(0, Math.min(1, (A.coreR.x - linkEndX) / (A.coreR.x - A.linkRest.x || 1)));
+            return lerp(A.coreR.y, A.linkRest.y, tRest);
+        }
         function updateLinkShape(now) {
             if (leftI > 0.02) {
-                const d = rayD(A.coreL.x + 6, A.coreL.y, A.dpL.x - 2, A.dpL.y - 2, now, leftJ, 5, 12, 26);
+                const d = rayD(A.coreL.x + 6, A.coreL.y, A.dpL.x, A.dpL.y, now, leftJ, 5, 12, 26);
                 ['llLo', 'llMid', 'llCore', 'llFlow'].forEach(id => $(id).setAttribute('d', d));
             }
             if (linkI > 0.02) {
-                const targetY = rightOn ? (A.wolR.y - 2) : lerp(A.coreR.y + 8, A.wolR.y - 2, Math.max(0, Math.min(1, (A.linkRest - linkEndX) / (A.linkRest - A.linkFinal || 1))));
+                const targetY = getLinkTargetY();
                 const d = rayD(A.coreR.x - 6, A.coreR.y, linkEndX, targetY, now, linkJ, 6, 13, 26);
                 ['elLo', 'elMid', 'elCore', 'elFlow'].forEach(id => $(id).setAttribute('d', d));
                 $('elTip').setAttribute('cx', linkEndX); $('elTip').setAttribute('cy', targetY);
             }
         }
         function updateBuddy() {
-            const d = rayD(A.dpR.x + 4, A.dpR.y + 2, A.wolL.x - 4, A.wolL.y + 2, 0, buddyJ, 2, 9, 12);
+            const d = rayD(A.dpR.x, A.dpR.y, A.wolL.x, A.wolL.y, 0, buddyJ, 2, 9, 12);
             ['blLo', 'blMid', 'blCore', 'blFlow'].forEach(id => $(id).setAttribute('d', d));
             const set = (id, p) => { $(id).setAttribute('cx', p.x); $(id).setAttribute('cy', p.y); };
             set('gDpL', A.dpL); set('gDpR', A.dpR); set('gWlL', A.wolL); set('gWlR', A.wolR);
             const midContact = { x: (A.dpR.x + A.wolL.x) / 2, y: (A.dpR.y + A.wolL.y) / 2 };
             set('gContact', midContact);
             if ($('gContactCore')) set('gContactCore', midContact);
-            $('llTip').setAttribute('cx', A.dpL.x); $('llTip').setAttribute('cy', A.dpL.y - 2);
+            $('llTip').setAttribute('cx', A.dpL.x); $('llTip').setAttribute('cy', A.dpL.y);
         }
 
         /* ============ canvas fx ============ */
@@ -1819,12 +1979,12 @@
                 }
             }
             if (stubI > 0.04 && !linkOn) {
-                const gp = { x: A.linkRest, y: A.coreR.y + 10 };
+                const gp = { x: A.linkRest.x, y: A.linkRest.y };
                 streamBolt(A.coreR, gp, stubI * intens, S4, now);
                 if (Math.random() < stubI * 0.6) sparksAt(gp.x, gp.y, 2, true);
             }
             if (linkI > 0.04) {
-                const targetY = rightOn ? (A.wolR.y - 2) : lerp(A.coreR.y + 10, A.wolR.y - 2, Math.max(0, Math.min(1, (A.linkRest - linkEndX) / (A.linkRest - A.linkFinal || 1))));
+                const targetY = getLinkTargetY();
                 const le = { x: linkEndX, y: targetY };
                 streamBolt(A.coreR, le, linkI * intens, S2, now);
                 if (!tension && Math.random() < linkI * 0.55) sparksAt(le.x, le.y, 2, true);
@@ -1899,7 +2059,9 @@
             towerLvlR += (towerTR - towerLvlR) * Math.min(1, dtR * 2);
             updateCharge(dtG);
             updateStreams(now, dtR);
+            updateHandAnchors();
             updateLinkShape(now);
+            updateBuddy();
             stepParticles(dtR); stepRings(dtR);
             for (let i = bolts.length - 1; i >= 0; i--) { bolts[i].life -= dtR; if (bolts[i].life <= 0) bolts.splice(i, 1); }
 
@@ -1969,7 +2131,7 @@
             glowC(A.machine.x, A.machine.y, W * 0.1, (machineDead ? 0 : 0.15 + charge / 100 * 0.6), '110,180,255');
             glowC(A.dpL.x, A.dpL.y, 28 * leftI + 8, leftI, '160,210,255');
             glowC(A.wolR.x, A.wolR.y, 28 * rightI + 8, rightI, '160,210,255');
-            if (linkI > 0.03) glowC(linkEndX, rightOn ? (A.wolR.y - 2) : (A.coreR.y + 10), 26 * linkI + 6, linkI, '160,210,255');
+            if (linkI > 0.03) glowC(linkEndX, getLinkTargetY(), 26 * linkI + 6, linkI, '160,210,255');
             if (contactOn) glowC((A.dpR.x + A.wolL.x) / 2, (A.dpR.y + A.wolL.y) / 2, 38, 0.95, '190,225,255');
             for (const b of bolts) drawShape(b.p, b.bs, b.life / b.max, b.w);
             for (const r of rings) {
@@ -2090,14 +2252,14 @@
                 await wait(1300);
                 linkEl.classList.add('is-active');   /* the bug swallows the visual bridge */
                 linkOn = true;
-                await tween(1400, k => { linkEndX = lerp(A.coreR.x - 10, A.linkRest, easeOut(k)); });
+                await tween(1400, k => { linkEndX = lerp(A.coreR.x - 10, A.linkRest.x, easeOut(k)); });
                 msg('ENERGY DISCHARGE IN PROGRESS… NO VISUAL LINK');
                 await wait(1500);
                 /* failure */
-                stub = false; sparksAt(A.linkRest, A.coreR.y + 10, 30, false);
+                stub = false; sparksAt(A.linkRest.x, A.linkRest.y, 30, false);
                 sparksAt(A.dpR.x, A.dpR.y, 12, true);
                 flash(0.28); shake(9); S.fail(); dpEl.classList.add('strain');
-                pushBolt(A.linkRest, A.coreR.y + 10, A.linkRest - 60, A.coreR.y + 70, 16, 0.35, 2.5);
+                pushBolt(A.linkRest.x, A.linkRest.y, A.linkRest.x - 60, A.linkRest.y + 40, 16, 0.35, 2.5);
                 msg('LINK FAILED — SIGNAL INVISIBLE // TARGET OUT OF REACH');
                 chargeTarget = charge;
                 await wait(1900);
@@ -2111,8 +2273,10 @@
                 paused = false; pausedAccum += performance.now() - pausedAt;
                 debugOverlay.classList.add('hidden'); bypassBtn.classList.add('hidden');
                 setState('CONNECTION_RESTORED');
-                flash(0.24, '#cfe8ff'); ring(linkEndX, A.coreR.y + 10, 440, 3, '160,210,255');
-                sparksAt(linkEndX, A.coreR.y + 10, 22, true); S.zap();
+                flash(0.24, '#cfe8ff');
+                const restoreY = getLinkTargetY();
+                ring(linkEndX, restoreY, 440, 3, '160,210,255');
+                sparksAt(linkEndX, restoreY, 22, true); S.zap();
                 linkEl.classList.add('energized'); msg('ENERGY LINK RESTORED');
                 await wait(1400);
                 dpEl.classList.remove('strain'); jolt(dpEl);
@@ -2137,14 +2301,15 @@
                 reachR = true;
                 await wait(950);
                 contactOn = true; buddyEl.classList.add('on');
-                flash(0.32, '#dff0ff'); shake(6); ring((A.dpR.x + A.wolL.x) / 2, A.dpR.y, 400, 3, '190,225,255');
-                sparksAt((A.dpR.x + A.wolL.x) / 2, A.dpR.y, 26, true); S.hand();
+                const midHandY = (A.dpR.y + A.wolL.y) / 2;
+                flash(0.32, '#dff0ff'); shake(6); ring((A.dpR.x + A.wolL.x) / 2, midHandY, 400, 3, '190,225,255');
+                sparksAt((A.dpR.x + A.wolL.x) / 2, midHandY, 26, true); S.hand();
                 jolt(dpEl); jolt(wolvEl);                    /* contact shock hits both */
                 msg('HANDS LOCKED — CIRCUIT NEARLY CLOSED');
                 await wait(1600);
                 msg('WOLVERINE REACHING FOR THE RIGHT SIGNAL');
                 wolvSvg.classList.add('glint'); setTimeout(() => wolvSvg.classList.remove('glint'), 1000);
-                await tween(1300, k => { linkEndX = lerp(A.linkRest, A.linkFinal, easeOut(k)); });
+                await tween(1300, k => { linkEndX = lerp(A.linkRest.x, A.linkFinal, easeOut(k)); });
                 rightOn = true; reachR = false;
                 await wait(650);
                 flash(0.3, '#dff0ff'); shake(7); ring(A.wolR.x, A.wolR.y, 440, 3, '160,210,255');
@@ -2168,7 +2333,7 @@
                 /* release */
                 tension = false; dimEl.style.opacity = 0; cam.tz = 1.07;
                 flash(0.95, '#eaf4ff'); shake(24); S.overload(); S.rumble(0.4);
-                const cc = { x: (A.dpL.x + A.wolR.x) / 2, y: A.dpL.y };
+                const cc = { x: (A.dpL.x + A.wolR.x) / 2, y: (A.dpL.y + A.wolR.y) / 2 };
                 for (let i = 0; i < 4; i++) ring(cc.x, cc.y, 720 + i * 170, 4, '190,225,255');
                 ring(A.machine.x, A.machine.y, 920, 5, '160,210,255');
                 for (let i = 0; i < 14; i++)
@@ -2198,6 +2363,7 @@
                 chargeCrash = false; cam.tz = 1; S.rumble(0.06); S.chargeG(0, 42);
                 leftOn = rightOn = linkOn = false; contactOn = false; tension = false;
                 buddyEl.classList.remove('on'); leftLinkEl.classList.remove('on');
+                linkEl.classList.remove('is-active'); linkEl.classList.remove('energized');
                 dpEl.classList.remove('strain'); wolvEl.classList.remove('strain');
                 towerTL = towerTR = 0.12;
                 gust(W * 0.4, H * 0.7, W * 0.6, -W * 0.15, -H * 0.05);
