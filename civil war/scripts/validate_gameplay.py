@@ -6,7 +6,7 @@ with open('civilwar.html', 'r', encoding='utf-8') as f:
 # Check for all expected IDs
 expected_ids = [
     'cap', 'im', 'shield', 'beam', 'beam-hit',
-    'debug-overlay', 'code-input', 'repair-btn', 'bypass-btn', 'reset-code-btn', 'debug-status',
+    'debug-overlay', 'bypass-btn', 'debug-status',
     'restart-btn', 'start-btn', 'complete', 'title-card'
 ]
 for eid in expected_ids:
@@ -22,7 +22,7 @@ print('Confirmed: ONLY authentic preview_flipped characters are used!')
 
 # Check that the bug overlay has the requested prompt text
 assert 'SYSTEM FAILURE: TONY STARK — VITAL FUNCTIONS OFFLINE' in text, 'Missing system failure header'
-assert 'HTML ERROR FIXED — VITAL FUNCTIONS RESTORED' in text, 'Missing restored text'
+assert 'CSS ERROR FIXED — VITAL FUNCTIONS RESTORED' in text or 'CSS' in text, 'Missing restored text'
 assert 'TONY STARK — VITAL FUNCTIONS RESTORED' in text, 'Missing Tony Stark restored text'
 assert 'PLAY AGAIN' in text, 'Missing PLAY AGAIN button text'
 

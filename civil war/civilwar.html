@@ -1854,48 +1854,17 @@
             font-family: "Segoe UI", system-ui, sans-serif;
         }
 
-        #debug-overlay .d-code-box {
-            background: #04070e;
-            border: 1px solid rgba(100, 140, 190, 0.25);
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 12px;
-        }
-
-        #debug-overlay .d-code-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #0d1524;
-            padding: 6px 12px;
-            font-size: 11px;
-            color: #7b94b2;
-            letter-spacing: 0.08em;
-            border-bottom: 1px solid rgba(100, 140, 190, 0.15);
-        }
-
-        #debug-overlay .d-tag-err {
-            color: #ff5252;
-            font-size: 10px;
-            font-weight: 700;
-        }
-
-        #code-input {
-            width: 100%;
-            background: transparent;
-            color: #e0f2fe;
-            border: none;
-            padding: 12px;
+        #debug-overlay .d-code-snippet {
+            margin: 6px 0;
+            background: #020610;
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            padding: 8px 10px;
+            border-radius: 6px;
+            color: #38bdf8;
             font-family: Consolas, "SF Mono", Menlo, monospace;
-            font-size: 13px;
-            line-height: 1.6;
-            resize: vertical;
-            outline: none;
-            tab-size: 2;
-        }
-
-        #code-input:focus {
-            background: rgba(30, 50, 80, 0.2);
+            font-size: 11.5px;
+            word-break: break-all;
+            user-select: all;
         }
 
         #debug-status {
@@ -1925,34 +1894,8 @@
             gap: 10px;
         }
 
-        #repair-btn {
-            flex: 1;
-            padding: 10px 16px;
-            border-radius: 6px;
-            font-family: inherit;
-            font-size: 12.5px;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            background: linear-gradient(180deg, #1d4ed8, #1e40af);
-            color: #ffffff;
-            border: 1px solid #3b82f6;
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
-            transition: all 0.2s ease;
-        }
-
-        #repair-btn:hover {
-            background: linear-gradient(180deg, #2563eb, #1d4ed8);
-            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.55);
-            transform: translateY(-1px);
-        }
-
-        #repair-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
         #bypass-btn {
+            width: 100%;
             padding: 10px 16px;
             border-radius: 6px;
             font-family: inherit;
@@ -2349,7 +2292,7 @@
    Keyframes: "shield-impact"       (defined in #keyframes-css)
    ─────────────────────────────────────────────────────────── */
         .shield-impact {
-            animation: shield-impact 800ms ease-out forwards;
+            animation: shieldImpact 800ms ease-out forwards;
         }
     </style>
 </head>
@@ -2532,27 +2475,26 @@
         <div id="debug-overlay">
             <div class="d-head"><span class="d-dot"></span>SYSTEM FAILURE: TONY STARK — VITAL FUNCTIONS OFFLINE</div>
             <div class="d-sub">
-                Critical error in armor life-support subroutine <code>&lt;recovery_core.html&gt;</code>.
-                A malformed HTML tag has halted defibrillation and arc reactor restart.
+                Critical CSS syntax fault in impact shockwave stylesheet <code>#bug-css</code>.
+                The animation property references <code>shieldImpact</code>, but defined keyframes are named <code>shield-impact</code>.
             </div>
             <div class="d-instruction">
-                <b>TASK:</b> Correct the mismatched HTML tags below to restore Tony Stark's life support.
-            </div>
-            <div class="d-code-box">
-                <div class="d-code-header">
-                    <span>ARMOR RECOVERY INTERFACE</span>
-                    <span class="d-tag-err">HTML SYNTAX ERROR DETECTED</span>
-                </div>
-                <textarea id="code-input" spellcheck="false" rows="3">&lt;div class="reactor-status"&gt;
-  &lt;p&gt;ARC REACTOR: OFFLINE&lt;/div&gt;</textarea>
+                <b>DEVTOOLS REPAIR PROCEDURE:</b>
+                <ol style="margin: 8px 0 8px 18px; line-height: 1.6;">
+                    <li>Press <code>F12</code> or right-click → <b>Inspect</b> to open Developer Tools.</li>
+                    <li>In the <b>Console</b> tab, repair the stylesheet by executing:
+                        <div class="d-code-snippet">
+                            document.getElementById('bug-css').textContent = '.shield-impact { animation: shield-impact 800ms ease-out forwards; }';
+                        </div>
+                    </li>
+                    <li>Alternatively, select <code>.shield-impact</code> in the Elements panel and fix <code>animation-name</code> to <code>shield-impact</code>.</li>
+                </ol>
             </div>
             <div id="debug-status" class="d-status hint">
-                HINT: The &lt;p&gt; element is never closed before &lt;/div&gt;. Add the missing &lt;/p&gt; closing tag.
+                ⚡ Awaiting CSS correction via Developer Tools Console…
             </div>
             <div class="d-actions">
-                <button id="repair-btn">⚡ INJECT CODE FIX</button>
-                <button id="bypass-btn" class="btn-bypass" title="Fix code and bypass challenge for testing">⚡ AUTO FIX (BYPASS)</button>
-                <button id="reset-code-btn">RESET CODE</button>
+                <button id="bypass-btn" class="btn-bypass" title="Fix CSS and bypass challenge for testing">⚡ TEST BYPASS (AUTO-FIX)</button>
             </div>
         </div>
 
@@ -2579,7 +2521,7 @@
                     ▸ Watch the intense confrontation unfold — <b>SPACE</b> / click when prompted (block · throw · brace)<br>
                     ▸ Iron Man attacks with devastating chest-originating <b>Arc Reactor Unibeams</b><br>
                     ▸ Experience dynamic character visuals with distinct action poses throughout the fight<br>
-                    ▸ After Iron Man is defeated, solve the critical <b>HTML bug</b> to revive Tony Stark and restore his vital functions!
+                    ▸ After Iron Man is defeated, solve the critical <b>CSS bug</b> using DevTools to revive Tony Stark and restore his vital functions!
                 </div>
                 <div><button id="start-btn">▶&nbsp; BEGIN SEQUENCE</button></div>
                 <div class="foot">HTML · CSS · VANILLA JAVASCRIPT — NO LIBRARIES · SOUND ON RECOMMENDED</div>
@@ -2983,78 +2925,80 @@
             });
 
             /* ---------------------------------------------------------------------
-               HTML DEBUGGING CHALLENGE & TONY STARK REVIVAL
+               CSS DEBUGGING CHALLENGE & TONY STARK REVIVAL
                --------------------------------------------------------------------- */
-            const codeInput = byId('code-input'),
-                repairBtn = byId('repair-btn'),
-                bypassBtn = byId('bypass-btn'),
-                resetCodeBtn = byId('reset-code-btn'),
+            const bypassBtn = byId('bypass-btn'),
                 debugStatus = byId('debug-status');
 
-            const INITIAL_HTML_BUG = '<div class="reactor-status">\n  <p>ARC REACTOR: OFFLINE</div>';
-            const FIXED_HTML_CODE = '<div class="reactor-status">\n  <p>ARC REACTOR: OFFLINE</p>\n</div>';
-
-            function validateHtmlCode(input) {
-                const trimmed = (input || '').trim();
-                if (!trimmed) {
-                    return { ok: false, msg: 'ERROR: Code cannot be empty. Please enter the corrected markup.' };
-                }
-                const hasClosingP = /<\s*\/\s*p\s*>/i.test(trimmed);
-                const hasOpeningP = /<\s*p\b[^>]*>/i.test(trimmed);
-                const hasClosingDiv = /<\s*\/\s*div\s*>/i.test(trimmed);
-                const hasOpeningDiv = /<\s*div\b[^>]*>/i.test(trimmed);
-
-                if (!hasClosingP) {
-                    return { ok: false, msg: 'SYNTAX ERROR: The <p> tag is missing its closing </p> tag!' };
-                }
-                if (!hasOpeningP || !hasClosingDiv || !hasOpeningDiv) {
-                    return { ok: false, msg: 'SYNTAX ERROR: Missing required <div> or <p> tags.' };
-                }
-                const pClosePos = trimmed.search(/<\s*\/\s*p\s*>/i);
-                const divClosePos = trimmed.search(/<\s*\/\s*div\s*>/i);
-                if (pClosePos > divClosePos) {
-                    return { ok: false, msg: 'HIERARCHY ERROR: </p> must close before </div>!' };
-                }
-                return { ok: true, msg: 'HTML ERROR FIXED — VITAL FUNCTIONS RESTORED' };
+            let pollTimer = null;
+            function animsOk() {
+                try {
+                    for (const a of impactEl.getAnimations()) {
+                        if (a.animationName === 'shield-impact') return true;
+                    }
+                    const cs = window.getComputedStyle(impactEl);
+                    if (cs && cs.animationName === 'shield-impact') return true;
+                    if (impactEl.style.animation && impactEl.style.animation.includes('shield-impact')) return true;
+                    const bugText = byId('bug-css').textContent;
+                    if (bugText && /animation\s*:\s*shield-impact\b/i.test(bugText)) return true;
+                } catch (e) { }
+                return false;
             }
 
-            function checkHtmlFix() {
-                if (S.debugResolved) return;
-                const code = codeInput.value;
-                const res = validateHtmlCode(code);
-                if (!res.ok) {
-                    debugStatus.textContent = res.msg;
-                    debugStatus.className = 'd-status err';
-                    shake('shake-s');
-                    return;
-                }
-                // Validated fix!
-                S.debugResolved = true;
-                S.resolvedBy = 'fix';
-                debugStatus.textContent = res.msg;
-                debugStatus.className = 'd-status good';
-                repairBtn.disabled = true;
-                if (bypassBtn) bypassBtn.disabled = true;
-                codeInput.disabled = true;
-                A.reboot();
+            function startPolling() {
+                stopPolling();
+                pollTimer = setInterval(() => {
+                    if (S.debugResolved) { stopPolling(); return; }
+                    if (animsOk()) {
+                        resolveCssFix();
+                    }
+                }, 200);
+            }
 
+            function stopPolling() {
+                if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+            }
+
+            function resolveCssFix() {
+                if (S.debugResolved) return;
+                S.debugResolved = true;
+                S.resolvedBy = 'css-fix';
+                stopPolling();
+                console.log('%cCSS BUG FIXED — @keyframes "shield-impact" restored on .shield-impact! Tony Stark vital functions online.', 'color:#4caf50; font-weight:bold;');
+                debugStatus.textContent = 'CSS ERROR FIXED — VITAL FUNCTIONS RESTORED';
+                debugStatus.className = 'd-status good';
+                if (bypassBtn) bypassBtn.disabled = true;
+                A.reboot();
                 later(() => {
                     hideOverlay();
                     reviveTony();
-                }, 1300);
+                }, 1200);
             }
+
+            impactEl.addEventListener('animationstart', e => {
+                if (e.animationName === 'shield-impact') {
+                    resolveCssFix();
+                }
+            });
+
+            window.fixBug = window.fixCssBug = function () {
+                byId('bug-css').textContent = '.shield-impact { animation: shield-impact 800ms ease-out forwards; }';
+            };
+            window.enterDebugPause = enterDebugPause;
+            window.S = S;
 
             function enterDebugPause() {
                 S.phase = 'DEBUG_PAUSE';
                 S.playing = false;
                 slate('DIAGNOSTIC · SYSTEM FAILURE');
                 later(showOverlay, 400);
-                console.log('%cSYSTEM FAILURE: TONY STARK — VITAL FUNCTIONS OFFLINE. Awaiting HTML bug correction…', 'color:#ff5252; font-weight:bold;');
+                startPolling();
+                console.log('%cSYSTEM FAILURE: TONY STARK — VITAL FUNCTIONS OFFLINE. Awaiting CSS bug correction…', 'color:#ff5252; font-weight:bold;');
+                console.log('%cDIAGNOSTIC — .shield-impact: animation "shieldImpact" failed to start (no matching @keyframes "shield-impact"). Repair in Console/DevTools via:\n  document.getElementById("bug-css").textContent = ".shield-impact { animation: shield-impact 800ms ease-out forwards; }";', 'color:#e5a13a;');
             }
 
             function showOverlay() {
                 overlayEl.classList.add('on');
-                codeInput.focus();
             }
 
             function hideOverlay() {
@@ -3166,7 +3110,7 @@
             function finish() {
                 S.phase = 'COMPLETE'; S.playing = false;
                 const r = byId('st-result');
-                r.textContent = 'HTML REPAIR VERIFIED — ARC REACTOR & LIFE SUPPORT RESTORED';
+                r.textContent = 'CSS BUG REPAIR VERIFIED — ARC REACTOR & LIFE SUPPORT RESTORED';
                 r.className = 'good';
                 byId('st-time').textContent = S.time.toFixed(1) + 's active combat';
                 byId('st-inter').textContent = `BLOCK ${S.stats.block} · THROW ${S.stats.throw} · BRACE ${S.stats.brace}`;
@@ -3201,15 +3145,14 @@
                 wisp.classList.remove('on'); wisp.removeAttribute('style');
                 byId('rep-light').classList.remove('on');
                 flashEl.classList.remove('go');
+                stopPolling();
+                byId('bug-css').textContent = '.shield-impact {\n            animation: shieldImpact 800ms ease-out forwards;\n        }';
                 try { impactEl.getAnimations().forEach(a => a.cancel()); } catch (e) { }
                 impactEl.removeAttribute('style');
                 impactEl.className = 'shield-impact';
 
-                codeInput.value = INITIAL_HTML_BUG;
-                codeInput.disabled = false;
-                repairBtn.disabled = false;
                 if (bypassBtn) bypassBtn.disabled = false;
-                debugStatus.textContent = 'HINT: The <p> element is never closed before </div>. Add the missing </p> closing tag.';
+                debugStatus.textContent = '⚡ Awaiting CSS correction via Developer Tools Console…';
                 debugStatus.className = 'd-status hint';
 
                 captionEl.classList.remove('on'); hidePrompt();
@@ -3220,30 +3163,17 @@
                 setShot('wide', { cut: true, dur: 0 });
             }
 
-            repairBtn.addEventListener('click', checkHtmlFix);
             if (bypassBtn) {
                 bypassBtn.addEventListener('click', () => {
                     if (S.debugResolved) return;
-                    codeInput.value = FIXED_HTML_CODE;
-                    checkHtmlFix();
+                    byId('bug-css').textContent = '.shield-impact {\n            animation: shield-impact 800ms ease-out forwards;\n        }';
+                    resolveCssFix();
                 });
             }
-            resetCodeBtn.addEventListener('click', () => {
-                codeInput.value = INITIAL_HTML_BUG;
-                debugStatus.textContent = 'HINT: The <p> element is never closed before </div>. Add the missing </p> closing tag.';
-                debugStatus.className = 'd-status hint';
-                codeInput.focus();
-            });
-            codeInput.addEventListener('keydown', e => {
-                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-                    e.preventDefault();
-                    checkHtmlFix();
-                }
-            });
             window.addEventListener('keydown', e => {
                 if ((e.key === 'b' || e.key === 'B') && overlayEl.classList.contains('on') && !S.debugResolved) {
-                    codeInput.value = FIXED_HTML_CODE;
-                    checkHtmlFix();
+                    byId('bug-css').textContent = '.shield-impact {\n            animation: shield-impact 800ms ease-out forwards;\n        }';
+                    resolveCssFix();
                 }
             });
             let cueIdx = 0, lastT = performance.now();
