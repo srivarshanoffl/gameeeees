@@ -1217,8 +1217,9 @@ class ThorHammerGame extends GameEngine {
       // REALISTIC ASGARDIAN CIVILIAN CHARACTER SPRITE
       const cImg = this.civilianImages[i % this.civilianImages.length];
       if (cImg && cImg.complete && cImg.naturalWidth > 0) {
-        const drawW = 76;
-        const drawH = 114;
+        const drawH = 125;
+        const aspect = cImg.naturalWidth / cImg.naturalHeight;
+        const drawW = drawH * aspect;
         ctx.drawImage(cImg, -drawW / 2, -drawH + 16 + bob, drawW, drawH);
       } else {
         // High-quality fallback rendering
