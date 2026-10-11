@@ -1315,6 +1315,38 @@
             animation: shield-final-throw .55s cubic-bezier(.22, .75, .35, 1) forwards;
         }
 
+        @keyframes shield-drop-ground {
+            0% {
+                transform: translate(292px, 142px) rotateY(-55deg) rotateZ(18deg);
+                opacity: 1;
+            }
+            40% {
+                transform: translate(280px, 480px) rotateY(-20deg) rotateZ(45deg);
+            }
+            65% {
+                transform: translate(270px, 518px) rotateX(65deg) rotateZ(20deg);
+            }
+            80% {
+                transform: translate(265px, 508px) rotateX(62deg) rotateZ(24deg);
+            }
+            100% {
+                transform: translate(265px, 518px) rotateX(66deg) rotateZ(22deg);
+            }
+        }
+
+        #shield.grounded {
+            animation: shield-drop-ground 1.1s cubic-bezier(.25, .8, .25, 1) forwards !important;
+            filter: drop-shadow(0 15px 14px rgba(0, 0, 0, 0.88)) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.95)) !important;
+        }
+
+        #cap.vanished,
+        #cap-refl.vanished {
+            opacity: 0 !important;
+            filter: blur(6px) !important;
+            transition: opacity 2.6s cubic-bezier(.4, 0, .2, 1), filter 2.6s cubic-bezier(.4, 0, .2, 1) !important;
+            pointer-events: none !important;
+        }
+
         @keyframes press-jit {
             from {
                 transform: translate(0, 0)
@@ -3020,17 +3052,33 @@
                 im('im-revived');
 
                 // 3. Display recovery announcement
-                caption('TONY STARK — VITAL FUNCTIONS RESTORED', 4.0);
+                caption('TONY STARK — VITAL FUNCTIONS RESTORED', 2.8);
                 flourish('VITAL FUNCTIONS RESTORED');
 
-                // 4. Transition camera to final composition showing Cap and Tony
+                // 4. Shield comes off and gets grounded
                 later(() => {
-                    setShot('finalWide', { dur: 2600 });
-                    titleEl.classList.add('on');
-                }, 1400);
+                    caption("That shield doesn't belong to you! My father made that shield!", 3.0, 'STARK');
+                    shield.classList.remove('at-stuck');
+                    shield.classList.add('grounded');
+                    A.clank();
+                    dust(1090, 780, 5);
+                    shake('shake-s');
+                }, 2200);
 
-                // 5. Completion screen with PLAY AGAIN button
-                later(finish, 4200);
+                // 5. Captain America vanishes into the shadows
+                later(() => {
+                    capEl.classList.add('vanished');
+                    capRefl.classList.add('vanished');
+                    caption('Steve Rogers leaves the shield behind and fades into the shadows...', 3.5);
+                    setShot('aftermath', { dur: 3600 });
+                }, 4000);
+
+                // 6. Title and completion screen
+                later(() => {
+                    titleEl.classList.add('on');
+                }, 6000);
+
+                later(finish, 7500);
             }
 
             /* ---------------------------------------------------------------------
@@ -3131,11 +3179,12 @@
                 });
 
                 cap('cap-idle'); im('im-enter');
-                capEl.classList.remove('cap-quiet');
+                capEl.classList.remove('cap-quiet', 'vanished');
+                if (capRefl) capRefl.classList.remove('vanished');
                 imEl.className = 'chr im-enter';
                 moveCapTo(0, 0); moveImTo(IM_IN, 0);
 
-                shield.className = ''; shield.style.transform = ''; shieldInner.classList.remove('press');
+                shield.className = ''; shield.style.transform = ''; shieldInner.classList.remove('press'); shield.classList.remove('grounded');
 
                 fx.classList.remove('impact-live');
                 beam.classList.remove('firing'); beamHit.classList.remove('on');

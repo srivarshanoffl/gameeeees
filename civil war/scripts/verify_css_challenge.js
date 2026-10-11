@@ -107,18 +107,60 @@ const fs = require('fs');
     }
 
     const finalResult = await page.evaluate(() => {
+        const shieldEl = document.getElementById('shield');
+        const capEl = document.getElementById('cap');
+        const capRefl = document.getElementById('cap-refl');
         return {
             phase: window.S.phase,
             resultText: document.getElementById('st-result')?.textContent,
-            completeVisible: document.getElementById('complete')?.classList?.contains('on')
+            completeVisible: document.getElementById('complete')?.classList?.contains('on'),
+            shieldGrounded: shieldEl.classList.contains('grounded'),
+            capVanished: capEl.classList.contains('vanished'),
+            capOpacity: window.getComputedStyle(capEl).opacity,
+            capReflVanished: capRefl?.classList.contains('vanished')
         };
     });
-    console.log('Final completion state:', finalResult);
+    console.log('Final completion state & aftermath check:', finalResult);
 
     if (finalResult.phase !== 'COMPLETE' && finalResult.phase !== 'REVIVED') {
         throw new Error('Game did not complete after revival');
     }
-    console.log('✓ Sequence completed successfully!');
+    if (!finalResult.shieldGrounded) {
+        throw new Error('Shield did not receive the "grounded" class!');
+    }
+    if (!finalResult.capVanished) {
+        throw new Error('Captain America did not receive the "vanished" class!');
+    }
+    if (parseFloat(finalResult.capOpacity) > 0.1) {
+        throw new Error(`Captain America opacity expected 0, but got ${finalResult.capOpacity}`);
+    }
+    console.log('✓ Shield is grounded on floor and Captain America has vanished into shadows!');
+
+    // Capture screenshot of the aftermath scene with grounded shield and vanished Cap
+    const aftermathScreenshotPath = path.resolve(__dirname, 'shield_grounded_cap_vanished.png');
+    await page.screenshot({ path: aftermathScreenshotPath });
+    console.log('Saved aftermath screenshot to:', aftermathScreenshotPath);
+
+    // Step 6: Test Reset
+    console.log('\n[6/6] Testing resetAll() to ensure full replayability...');
+    await page.evaluate(() => {
+        document.getElementById('restart-btn').click();
+    });
+    await new Promise(r => setTimeout(r, 600));
+    const resetState = await page.evaluate(() => {
+        const shieldEl = document.getElementById('shield');
+        const capEl = document.getElementById('cap');
+        return {
+            phase: window.S.phase,
+            shieldGrounded: shieldEl.classList.contains('grounded'),
+            capVanished: capEl.classList.contains('vanished')
+        };
+    });
+    console.log('State after resetAll:', resetState);
+    if (resetState.shieldGrounded || resetState.capVanished) {
+        throw new Error('Reset failed to restore shield or Cap state!');
+    }
+    console.log('✓ Reset cleanly restored Cap and Shield.');
 
     await browser.close();
     console.log('\n========================================');
