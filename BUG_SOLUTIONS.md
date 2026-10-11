@@ -22,6 +22,7 @@ Here is the exact end-to-end **Solution Path** (button sequence, user interactio
 | **6** | **Spider-Man** | [`spiderman/spiderman/index.html`](file:///c:/Users/sriva/web%20escape%20final/spiderman/spiderman/index.html) | `[LAUNCH CHASE]` &rarr; `[DIAGNOSTIC HUD]` &rarr; **Fix Console** &rarr; `[Web Beam Locks On / Target Captured / Victory]` &rarr; `[RESTART CHASE]` | `document.getElementById('web-beam').style.opacity = '1';` |
 | **7** | **Doctor Strange / Wanda** | [`doctor strange wanda visison/doc_strange.html`](file:///c:/Users/sriva/web%20escape%20final/doctor%20strange%20wanda%20visison/doc_strange.html) | `[ENTER MIRROR DIMENSION]` &rarr; `[OPEN DIAGNOSTICS]` &rarr; **Fix Console** &rarr; `[Mirror Shatters / Whip Binds Wanda / Victory]` &rarr; `[RESTART TRIAL]` | `document.querySelectorAll('.spell-transition').forEach(el => el.style.animation = 'dimensional-transition 2s ease-in-out infinite');` |
 | **8** | **Thor — Thunder** | [`thor/thor-hammer.html`](file:///c:/Users/sriva/web%20escape%20final/thor/thor-hammer.html) | `[SUMMON MJOLNIR]` &rarr; `[DIAGNOSTIC MATRIX]` &rarr; **Fix Console** &rarr; `[Lightning Bridges / Mjolnir Caught / Victory]` &rarr; `[RECHARGE HAMMER]` | `document.querySelectorAll('.bifrost-ward').forEach(el => el.style.display = 'flex');` |
+| **9** | **Deadpool & Wolverine** | [`deadpool/deadpool.html`](file:///c:/Users/sriva/web%20escape%20final/deadpool/deadpool.html) | `[DEPLOY // INITIATE OVERLOAD]` &rarr; `[Wait for Debug Pause]` &rarr; **Fix Console** &rarr; `[Wolverine Arrives / Hands Connect / Final Overload Blast]` &rarr; `[REPLAY SEQUENCE]` | `document.getElementById('energyLink').style.opacity = '1';` |
 
 ---
 
@@ -720,5 +721,94 @@ Here is the exact end-to-end **Solution Path** (button sequence, user interactio
     `checkDevToolsFix()` polling and `MutationObserver` checking `window.getComputedStyle(testEl).display === 'flex'`.
 12. **Actual Browser-Testing Result**:
     **PASSED**. Verified in headless Chrome. Setting `display: flex` was detected via `getComputedStyle`, unlocking Celestial Thunder and finishing the battle. Restart cleanly resets `#bifrost-ward-css` to `display: center`.
+13. **Unresolved Limitations**:
+    None.
+
+---
+
+## Game 9: Deadpool & Wolverine — Final Overload
+
+1. **Game Number & Name**: Game 9 — Deadpool & Wolverine: Final Overload
+2. **Assigned Bug Category**: CSS
+3. **Exact Target File, Element & Attribute**:
+   - **Full File Path**: `c:\Users\sriva\web escape final\deadpool\deadpool.html` (also mirrored at `c:\Users\sriva\web escape final\deadpool\index.html`)
+   - **Target Rule**: `.energy-link.is-active`
+   - **Target Element**: `<g id="energyLink" class="energy-link is-active" filter="url(#fGlow)">`
+   - **CSS Property**: `opacity: 0;` &rarr; `opacity: 1;`
+4. **Complete Solution Path (Step-by-Step Walkthrough)**:
+   - **Step 1 (Launch & Start Game)**:
+     - Open URL: `file:///c:/Users/sriva/web escape final/deadpool/deadpool.html` in browser.
+     - Click Deploy button: `button#startBtn` (`DEPLOY // INITIATE OVERLOAD`) located at path `html > body > div#stage > div#startOverlay > div.start-box > button#startBtn`.
+   - **Step 2 (Advance to Bug Placeholder)**:
+     - Stage lights power on (`INTRO`).
+     - Signal towers charge up with lightning (`LIGHTNING_CHARGE`).
+     - Deadpool descends between signals (`CONNECTION_FAILURE`).
+     - Left signal links successfully with high-voltage shock.
+     - Right signal attempts connection, but the `.energy-link.is-active` CSS rule enforces `opacity: 0`.
+     - Right bridge remains invisible; connection breaks into failure sparks & alarms.
+     - Cinematic enters `DEBUG_PAUSE` mode and diagnostic HUD `#debugOverlay` displays with instructions.
+   - **Step 3A (DevTools Styles Solution Path)**:
+     - Press `F12` or right-click the right containment tower &rarr; select **Inspect**.
+     - In the **Elements** panel, select `<g id="energyLink">`.
+     - In the **Styles** panel on the right, find rule `.energy-link.is-active`.
+     - Locate declaration `opacity: 0;`. Double click `0` and change to `1`.
+     - Press `Enter`.
+   - **Step 3B (DevTools Console Solution Path)**:
+     - Press `F12` &rarr; switch to the **Console** tab.
+     - Type and execute the exact command:
+       ```javascript
+       document.getElementById('energyLink').style.opacity = '1';
+       ```
+       *(or `document.querySelector('.energy-link.is-active').style.opacity = '1';`)*
+     - Press `Enter`.
+   - **Step 4 (Resumption Path)**:
+     - The verification loop `startVerification()` detects `getComputedStyle(linkEl).opacity >= 0.95`.
+     - Diagnostic overlay `#debugOverlay` hides automatically.
+     - Energy link bursts into bright electric blue (`CONNECTION_RESTORED`).
+     - Wolverine enters from the right dust cloud (`WOLVERINE_ENTRANCE`).
+     - Wolverine and Deadpool lock hands covering the gap (`HAND_CONNECTION`).
+     - Full circuit completes, reactor reaches 100% capacity (`CIRCUIT_COMPLETE`).
+     - Screen shakes violently with maximum charge shockwave (`FINAL_OVERLOAD`).
+     - Containment core explodes with energy arcs and victory card displays (`MISSION COMPLETE`).
+   - **Step 5 (Replay / Reset Path)**:
+     - Click replay button: `button#restartBtn` (`REPLAY SEQUENCE`) located at path `html > body > div#stage > div#endOverlay > div.end-box > button#restartBtn`.
+     - Calls `resetAll()`, clears active styles, resets energy link opacity back to `0`, and re-arms the challenge.
+5. **Button Full Paths & Interaction Hierarchy**:
+   - **Deploy / Start Button**:
+     - **Full DOM Path**: `html > body > div#stage > div#startOverlay > div.start-box > button#startBtn`
+     - **CSS Selector**: `button#startBtn` / `#startBtn`
+     - **Label**: `DEPLOY // INITIATE OVERLOAD`
+     - **Function**: Starts timeline sequence and tower power up.
+   - **Diagnostic Auto-Fix Bypass Button**:
+     - **Full DOM Path**: `html > body > div#stage > div#debugOverlay > div.dbg-box > button#bypassBtn`
+     - **CSS Selector**: `button#bypassBtn` / `#bypassBtn`
+     - **Label**: `DEV // BYPASS TEST — AUTO-FIX BUG`
+     - **Function**: Applies `.energy-link.is-active { opacity: 1 !important }` via injected stylesheet for instant test bypass.
+   - **Replay Sequence Button**:
+     - **Full DOM Path**: `html > body > div#stage > div#endOverlay > div.end-box > button#restartBtn`
+     - **CSS Selector**: `button#restartBtn` / `#restartBtn`
+     - **Label**: `REPLAY SEQUENCE`
+     - **Function**: Reinitializes all character poses, resets reactor timers, and re-arms the CSS bug.
+6. **Original Intentional Defect**:
+   The active energy link CSS rule declares:
+   ```css
+   .energy-link.is-active {
+       opacity: 0;
+   }
+   ```
+7. **Why the Defect Breaks Intended Behavior**:
+   When Deadpool attempts to bridge the right signal tower to the core, the link element is hidden by `opacity: 0`. Without visual current transmission, the quantum circuit cannot close, causing energy discharge failure and halting the sequence in `DEBUG_PAUSE`.
+8. **Exact Correction Required**:
+   In the browser's Developer Tools Styles panel or via Console, update `.energy-link.is-active` or `#energyLink` to `opacity: 1`.
+9. **Exact Console Command**:
+   ```javascript
+   document.getElementById('energyLink').style.opacity = '1';
+   ```
+10. **Expected Result After Correction**:
+    `getComputedStyle(linkEl).opacity` evaluates to `1`. The diagnostic window closes, energy surges between Deadpool and the right terminal, Wolverine arrives to bridge the gap, they clasp hands, and the Final Overload cinematic completes.
+11. **Verification Mechanism**:
+    `startVerification()` polling interval checking `parseFloat(getComputedStyle(linkEl).opacity) >= 0.95`.
+12. **Actual Browser-Testing Result**:
+    **PASSED**. Verified live in browser and Playwright script. Setting opacity to `1` triggers immediate resolution, Wolverine entrance, and complete overload finale.
 13. **Unresolved Limitations**:
     None.
