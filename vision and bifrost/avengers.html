@@ -3444,10 +3444,10 @@
             <div class="d-info">
                 <h4>DIAGNOSTIC REPORT</h4>
                 <div class="d-list">
-                    <p class="bad">· initialization.js crashed at runtime</p>
-                    <p class="bad">· getElementById returned null</p>
-                    <p>· markup scan: module present in DOM</p>
-                    <p>· suspect: element identifier mismatch</p>
+                    <p class="bad">· initialization script halted: DOM element missing</p>
+                    <p class="bad">· getElementById('jarvis-matrix') returned null</p>
+                    <p>· live DOM scan: element found with id="jarvis-core"</p>
+                    <p>· defect: HTML element identifier mismatch</p>
                 </div>
                 <h4>MODULE MONITOR</h4>
                 <div class="dbg-mods">
@@ -3456,28 +3456,26 @@
                     <div class="matrix-module dim">SYNTHETIC BODY — OK</div>
                 </div>
                 <h4>OBJECTIVE</h4>
-                <p id="dObj">Find the bug in the source files, patch it, and bring the JARVIS matrix back online.</p>
+                <p id="dObj">Inspect the live DOM using Developer Tools, correct the element id to "jarvis-matrix", and restore the transfer.</p>
             </div>
-            <div class="d-edit">
-                <div class="d-tabs">
-                    <button class="ftab" data-f="laboratory.html">laboratory.html<span class="f-ro">READ</span></button>
-                    <button class="ftab" data-f="system.css">system.css<span class="f-ro">READ</span></button>
-                    <button class="ftab active" data-f="initialization.js">initialization.js<span
-                            class="f-ed">EDITABLE</span></button>
-                </div>
-                <div class="d-meta"><span id="dbgMeta">/stark/init/initialization.js</span><span>UTF-8 · LF</span></div>
-                <textarea id="dbgCode" spellcheck="false" autocomplete="off" autocapitalize="off" wrap="off"></textarea>
+            <div class="d-edit" style="display:flex; flex-direction:column; padding:18px; background:#070d14; border:1px solid #142535; gap:12px; justify-content:center;">
+                <h4 style="color:#6fe0ff; font-size:14px; letter-spacing:1px; margin:0;">DEVTOOLS REPAIR PROCEDURE</h4>
+                <ol style="color:#b2cbde; font-size:13px; line-height:1.7; padding-left:20px; margin:0;">
+                    <li>Open Developer Tools: press <kbd style="background:#132130; padding:2px 6px; border:1px solid #2a415a; border-radius:3px;">F12</kbd> or right-click &rarr; <em>Inspect</em>.</li>
+                    <li>In the <strong>Elements</strong> panel, locate <code style="color:#ffcf5f;">&lt;div id="jarvis-core"&gt;</code> and rename its id to <code style="color:#5cf5a6;">"jarvis-matrix"</code>.</li>
+                    <li>Alternatively, open the <strong>Console</strong> tab and execute:
+                        <pre style="background:#03080e; padding:8px 10px; border:1px solid #1c3349; color:#5cf5a6; border-radius:4px; margin-top:6px; font-size:12px; overflow-x:auto;">document.getElementById('jarvis-core').id = 'jarvis-matrix';</pre>
+                    </li>
+                </ol>
             </div>
             <div class="d-con">
-                <div class="d-conhead">CONSOLE — LIVE</div>
+                <div class="d-conhead">DIAGNOSTIC TELEMETRY</div>
                 <div id="dbgLog"></div>
             </div>
             <div class="d-run">
-                <div class="d-runleft"><span id="dbgStat">MATRIX: OFFLINE</span><span id="dbgAtt">PATCHES SUBMITTED:
-                        0</span></div>
+                <div class="d-runleft"><span id="dbgStat">⚡ Awaiting live DOM correction via Developer Tools…</span><span id="dbgAtt"></span></div>
                 <div style="display: flex; gap: 10px;">
-                    <button class="btn" id="btnPassDebug" onclick="Debug.success()">PASS DEBUG</button>
-                    <button class="btn" id="btnRun">RUN SYSTEM</button>
+                    <button class="btn" id="btnPassDebug">⚡ TEST BYPASS (AUTO-FIX)</button>
                 </div>
             </div>
         </section>
@@ -3910,110 +3908,84 @@
             '}'].join('\n');
 
         const Debug = {
-            locked: false, resolve: null, cur: 'initialization.js',
-            files: { 'laboratory.html': { ro: true, code: FILE_HTML }, 'system.css': { ro: true, code: FILE_CSS }, 'initialization.js': { ro: false, code: ORIG_JS } },
-            HINTS: [
-                'Hint: the script stops because getElementById finds nothing. Open the laboratory.html tab and check the id the markup actually defines.',
-                'Hint: initialization.js asks for id "jarvis-matrix". The markup in laboratory.html defines a different id.',
-                'Hint: edit the string inside getElementById( … ) in initialization.js so it matches the markup, then press RUN SYSTEM again.'],
+            locked: false, resolve: null, pollTimer: null,
             log(kind, text) {
                 const d = document.createElement('div'); d.className = 'ln ' + kind;
                 d.textContent = `[${new Date().toTimeString().slice(0, 8)}] ${text}`;
-                els.dbgLog.appendChild(d); els.dbgLog.scrollTop = 1e6
-            },
-            select(name) {
-                this.cur = name; const f = this.files[name];
-                els.dbgCode.value = f.code; els.dbgCode.readOnly = f.ro;
-                els.dbgMeta.textContent = '/stark/init/' + name;
-                $$('.ftab').forEach(b => b.classList.toggle('active', b.dataset.f === name))
+                if (els.dbgLog) { els.dbgLog.appendChild(d); els.dbgLog.scrollTop = 1e6; }
             },
             open() {
+                this.locked = false;
                 els.debug.classList.add('on');
                 this.log('sys', 'AVENGERS SYSTEM — DIAGNOSTIC TERMINAL v4.7.2');
-                this.log('sys', 'crash report received · initialization.js');
-                this.log('err', "TypeError: Cannot set properties of null (setting 'textContent')");
-                this.log('err', 'target element "jarvis-matrix" — NOT FOUND');
-                this.log('sys', 'inspect the source files · patch the bug · press RUN SYSTEM');
-                this.select('initialization.js')
+                this.log('err', "DOM Error: target element 'jarvis-matrix' not found in document.");
+                this.log('sys', 'Awaiting live DOM correction: rename #jarvis-core to #jarvis-matrix via DevTools.');
+                console.log('%cAVENGERS CRADLE FAILURE — Element #jarvis-matrix not found in DOM! Use Elements panel or Console to update: document.getElementById("jarvis-core").id = "jarvis-matrix"', 'color:#ff5252; font-weight:bold;');
+
+                if (this.pollTimer) clearInterval(this.pollTimer);
+                this.pollTimer = setInterval(() => {
+                    const fixedNode = document.getElementById('jarvis-matrix');
+                    if (fixedNode && !this.locked) {
+                        this.success();
+                    }
+                }, 200);
+
+                const passBtn = document.getElementById('btnPassDebug');
+                if (passBtn) {
+                    passBtn.onclick = () => {
+                        const core = document.getElementById('jarvis-core');
+                        if (core) core.id = 'jarvis-matrix';
+                        this.success();
+                    };
+                }
             },
             close() {
+                if (this.pollTimer) { clearInterval(this.pollTimer); this.pollTimer = null; }
                 this.locked = true; els.debug.classList.add('off');
-                after(520, () => { els.debug.classList.remove('on', 'off') })
-            },
-            resetModule() {
-                let core = document.getElementById('jarvis-core');
-                if (!core) {
-                    const wrap = document.querySelector('.dbg-mods');
-                    core = document.createElement('div'); core.className = 'matrix-module'; core.id = 'jarvis-core';
-                    wrap.prepend(core)
-                }
-                core.textContent = 'JARVIS MATRIX — OFFLINE'; core.classList.remove('online')
-            },
-            run() {
-                if (this.locked) return; Snd.ensure();
-                const code = els.dbgCode.value; G.attempts++;
-                els.dbgAtt.textContent = 'PATCHES SUBMITTED: ' + G.attempts;
-                this.log('sys', '> RUN SYSTEM · executing initialization.js …');
-                this.resetModule();
-                if (/\bwhile\s*\(\s*(true|1)\s*\)/.test(code) || /for\s*\(\s*;\s*;\s*\)/.test(code)) {
-                    this.log('err', 'Execution blocked: possible infinite loop detected.'); return this.failed()
-                }
-                if (/document\.write|document\.body\s*=|\.innerHTML\s*=/.test(code)) {
-                    this.log('err', 'Execution blocked: patch may not rewrite the page structure.'); return this.failed()
-                }
-                let ran = true;
-                try { (new Function(code))() } catch (e) {
-                    ran = false;
-                    this.log('err', (e.name || 'Error') + ': ' + (e.message || 'unknown fault'))
-                }
-                const el = document.getElementById('jarvis-core');
-                if (ran && el && /ONLINE/i.test(el.textContent) && !/OFFLINE/i.test(el.textContent) && el.classList.contains('online'))
-                    return this.success();
-                if (ran) {
-                    if (el && el.textContent !== 'JARVIS MATRIX — OFFLINE')
-                        this.log('sys', 'Script executed — but the module must read ONLINE and receive the class "online".');
-                    else this.log('sys', 'Script executed without errors — but the matrix is still OFFLINE.')
-                }
-                else this.log('err', 'SYSTEM ERROR — INITIALIZATION STILL FAILED');
-                this.failed()
-            },
-            failed() {
-                G.fails++; this.log('hint', this.HINTS[Math.min(this.HINTS.length - 1, G.fails - 1)]);
-                Snd.glitch(); Shake.start(3)
+                after(520, () => { els.debug.classList.remove('on', 'off') });
             },
             success() {
-                this.locked = true; els.dbgCode.readOnly = true;
-                els.btnRun.disabled = true; els.btnRun.textContent = 'PATCH ACCEPTED'; els.btnRun.classList.add('ok');
-                els.dbgStat.textContent = 'MATRIX: ONLINE'; els.dbgStat.className = 'ok';
-                els.dObj.textContent = 'Patch accepted. JARVIS matrix restored — returning to the laboratory.';
-                this.log('ok', 'jarvis-core → ONLINE');
+                if (this.locked) return;
+                this.locked = true;
+                if (this.pollTimer) { clearInterval(this.pollTimer); this.pollTimer = null; }
+                const node = document.getElementById('jarvis-matrix');
+                if (node) {
+                    node.textContent = 'JARVIS MATRIX — ONLINE';
+                    node.classList.add('online');
+                }
+                const stat = document.getElementById('dbgStat');
+                if (stat) {
+                    stat.textContent = '✓ DOM NODE #jarvis-matrix IDENTIFIED — ONLINE';
+                    stat.className = 'ok';
+                }
+                const obj = document.getElementById('dObj');
+                if (obj) obj.textContent = 'DOM repair detected. JARVIS matrix restored — returning to the laboratory.';
+                this.log('ok', 'DOM element #jarvis-matrix confirmed ONLINE');
                 this.log('ok', 'JARVIS MATRIX RESTORED');
+                console.log('%c✓ DOM REPAIR DETECTED — JARVIS MATRIX ONLINE', 'color:#5cf5a6; font-weight:bold;');
                 Snd.chime();
-                FX.burst(centerOf(document.getElementById('jarvis-core')), { n: 22, color: '#5cf5a6' });
+                if (node) FX.burst(centerOf(node), { n: 22, color: '#5cf5a6' });
                 flashFX('rgba(92,245,166,.16)', 200);
-                after(1700, () => { if (Debug.resolve) Debug.resolve() })
+                after(1700, () => { if (Debug.resolve) Debug.resolve(); });
             },
             reset() {
+                if (this.pollTimer) { clearInterval(this.pollTimer); this.pollTimer = null; }
                 this.locked = false; this.resolve = null;
-                this.files['initialization.js'].code = ORIG_JS;
-                els.dbgLog.innerHTML = ''; els.btnRun.disabled = false;
-                els.btnRun.textContent = 'RUN SYSTEM'; els.btnRun.classList.remove('ok');
-                els.dbgStat.textContent = 'MATRIX: OFFLINE'; els.dbgStat.className = '';
-                els.dbgAtt.textContent = 'PATCHES SUBMITTED: 0';
-                els.dObj.textContent = 'Find the bug in the source files, patch it, and bring the JARVIS matrix back online.';
-                this.resetModule(); this.select('initialization.js')
+                const matrixNode = document.getElementById('jarvis-matrix');
+                if (matrixNode) {
+                    matrixNode.id = 'jarvis-core';
+                    matrixNode.textContent = 'JARVIS MATRIX — OFFLINE';
+                    matrixNode.classList.remove('online');
+                }
+                const stat = document.getElementById('dbgStat');
+                if (stat) {
+                    stat.textContent = '⚡ Awaiting live DOM correction via Developer Tools…';
+                    stat.className = '';
+                }
+                if (els.dbgLog) els.dbgLog.innerHTML = '';
             }
         };
-        $$('.ftab').forEach(b => b.addEventListener('click', () => Debug.select(b.dataset.f)));
-        els.dbgCode.addEventListener('input', () => { const f = Debug.files[Debug.cur]; if (!f.ro) f.code = els.dbgCode.value });
-        els.dbgCode.addEventListener('keydown', e => {
-            if (e.key === 'Tab') {
-                e.preventDefault();
-                const ta = e.target, s = ta.selectionStart, en = ta.selectionEnd;
-                ta.value = ta.value.slice(0, s) + '  ' + ta.value.slice(en); ta.selectionStart = ta.selectionEnd = s + 2
-            }
-        });
-        els.btnRun.addEventListener('click', () => Debug.run());
+        window.Debug = Debug;
 
         /* ============================================================
            STORY SCENES

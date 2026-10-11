@@ -2914,16 +2914,20 @@
                             rebind the activation control.</div>
                     </div>
                 </aside>
-                <main class="dbg-center">
-                    <div class="editor-head"><b>control-markup.html</b><span>EDITABLE · REPAIR THE BROKEN LINE</span>
+                <main class="dbg-center" style="display:flex; flex-direction:column; padding:20px; background:#070f1a; border:1px solid #142535; border-radius:4px; gap:14px; justify-content:center;">
+                    <div class="editor-head" style="margin:0;"><b style="color:#6fe0ff; font-size:14px;">DEVTOOLS REPAIR PROCEDURE</b><span>DOM REPAIR · OBSERVATORY CONSOLE</span></div>
+                    <div id="bifrost-conduit" data-aligned="false" style="padding:10px 14px; background:#040911; border:1px solid #192f44; border-radius:4px;">
+                        <span style="font-size:12px; color:#7d95a6;">LIVE DOM TARGET:</span>
+                        <div style="margin-top:6px;"><button id="bifrost-actvate" class="gate-btn" style="pointer-events:none; opacity:0.65; padding:6px 14px; background:#102235; border:1px solid #3d6888; color:#cfe0ec; border-radius:3px;">OPEN BIFROST</button></div>
                     </div>
-                    <div class="editor">
-                        <div id="gutter" aria-hidden="true"></div>
-                        <textarea id="code" spellcheck="false" wrap="off" autocapitalize="off" autocorrect="off"
-                            aria-label="Control markup editor"></textarea>
-                    </div>
-                    <p class="editor-note">The gate system binds the activation control by its <code>id</code>
-                        attribute. Correct the markup, then run the diagnostic.</p>
+                    <ol style="color:#b2cbde; font-size:13px; line-height:1.7; padding-left:20px; margin:0;">
+                        <li>Open Developer Tools: press <kbd style="background:#132130; padding:2px 6px; border:1px solid #2a415a; border-radius:3px;">F12</kbd> or right-click &rarr; <em>Inspect</em>.</li>
+                        <li>In the <strong>Elements</strong> panel, find <code style="color:#ffcf5f;">&lt;button id="bifrost-actvate"&gt;</code> and fix the misspelling to <code style="color:#5cf5a6;">"bifrost-activate"</code>.</li>
+                        <li>Alternatively, execute in the <strong>Console</strong>:
+                            <pre style="background:#03080e; padding:8px 10px; border:1px solid #1c3349; color:#5cf5a6; border-radius:4px; margin-top:6px; font-size:12px; overflow-x:auto;">document.getElementById('bifrost-actvate').id = 'bifrost-activate';</pre>
+                        </li>
+                    </ol>
+                    <p class="editor-note" style="margin:0;">The gate system binds the activation control by its <code>id</code> attribute. Once corrected in the live DOM, the system auto-detects and activates the rainbow bridge.</p>
                 </main>
                 <aside class="dbg-right">
                     <div class="dbg-status err" id="dbg-status"><i class="dot"></i><span id="dbg-status-text">ACTIVATION
@@ -2940,8 +2944,7 @@
                 </aside>
             </div>
             <footer class="dbg-foot">
-                <button class="btn" id="btn-run">RUN DIAGNOSTIC</button>
-                <button class="btn dim" id="btn-reset">RESET CODE</button>
+                <button class="btn" id="btn-bypass" type="button" style="border-color:#5cf5a6; color:#5cf5a6;">⚡ TEST BYPASS (AUTO-FIX)</button>
                 <div class="dbg-foot-status" id="dbg-foot-status">GATE: OFFLINE — INTERFACE: DEGRADED</div>
             </footer>
         </section>
@@ -3360,6 +3363,7 @@
             challengeSolved: false, activationUnlocked: false,
             missionComplete: false, attempts: 0, t0: 0, chargeSfx: null
         };
+        window.STATE = STATE;
 
         const CAM = { zoom: 1 };
         function setCamera(z, ox, oy, dur = 1500) {
@@ -3916,38 +3920,23 @@
             els.dbgStatus.className = 'dbg-status ' + tone;
             els.dbgStatusText.textContent = msg;
         }
+        let bifrostPoll = null;
         async function openDebug(tk) {
             els.debug.hidden = false;
             requestAnimationFrame(() => els.debug.classList.add('on'));
-            syncGutter();
-            try {
-                await dlog(['> REPAIR MODE ENGAGED',
-                    '> CONTROL MARKUP LOADED — FAULT DETECTED',
-                    '> INTERFACE STATUS: DEGRADED · ACTIVATION TARGET MISSING'], tk, 300);
-            } catch (e) { if (e !== ABORT) throw e; }
-        }
-        function closeDebug() {
-            els.debug.classList.remove('on');
-            setTimeout(() => { els.debug.hidden = true; }, 480);
-        }
-        async function runDiagnostic() {
-            if (dbgBusy) return;
-            dbgBusy = true;
-            els.btnRun.disabled = true; els.btnReset.disabled = true;
-            const tk = RUN.t;
-            try {
-                await dlog(['> RUNNING DIAGNOSTIC...', '> SCANNING CONTROL MARKUP...'], tk, 240);
-                await wait(420, tk);
-                const code = els.code.value;
-                if (OK_ID_RE.test(code)) {
-                    // ---- validation passed ----
+            console.log('%cBIFROST SYSTEM FAILURE: Target button #bifrost-activate missing (found #bifrost-actvate)! Repair in Elements or Console via: document.getElementById("bifrost-actvate").id = "bifrost-activate"', 'color:#ff4655; font-weight:bold;');
+
+            const checkFix = async () => {
+                const fixedBtn = document.getElementById('bifrost-activate');
+                if (fixedBtn && !STATE.challengeSolved) {
                     STATE.challengeSolved = true;
                     STATE.activationUnlocked = true;
-                    await dlog(['> ELEMENT FOUND: <button>',
-                        '> BINDING CONTROL TARGET #bifrost-activate ... OK',
-                        '> BINDING ACTIVATION EVENTS ... OK'], tk, 260);
-                    await wait(300, tk);
-                    dbgStatus('ok', 'HTML VALIDATION PASSED');
+                    if (bifrostPoll) { clearInterval(bifrostPoll); bifrostPoll = null; }
+                    console.log('%c✓ BIFROST DOM BUG FIXED — #bifrost-activate identified!', 'color:#5cf5a6; font-weight:bold;');
+                    await dlog(['> LIVE DOM ELEMENT FOUND: <button id="bifrost-activate">',
+                        '> BINDING BIFROST CONTROL TARGET ... OK',
+                        '> BINDING RAINBOW BRIDGE ACTIVATION EVENTS ... OK'], tk, 260);
+                    dbgStatus('ok', 'HTML DOM REPAIR DETECTED');
                     AUDIO.play('success');
                     els.miniText.textContent = 'ONLINE';
                     elsMini.classList.add('online');
@@ -3957,45 +3946,46 @@
                     await dlog([{ t: '>> HTML VALIDATION PASSED', c: 'ok' },
                     { t: '>> BIFROST INTERFACE RESTORED', c: 'ok' }], tk, 420);
                     await wait(600, tk);
-                    await dlog(['> RESTARTING CONSOLE INTERFACE...'], tk, 240);
-                    await wait(500, tk);
                     trigger('diagnostic-pass');
-                } else {
-                    // ---- validation failed: exactly one bug, feedback only ----
-                    STATE.attempts++;
-                    AUDIO.play('err');
-                    if (!REDUCED) { els.debug.classList.add('jolt'); setTimeout(() => els.debug.classList.remove('jolt'), 320); }
-                    let reason;
-                    if (!BUTTON_RE.test(code)) reason = '> ERROR: no activation control detected — the <button> element is missing.';
-                    else if (!ANY_ID_RE.test(code)) reason = '> ERROR: the activation control has no id attribute.';
-                    else reason = '> ERROR: element #bifrost-activate not found — ACTIVATION TARGET MISSING';
-                    await dlog(['> ELEMENT FOUND: <button>',
-                        '> BINDING CONTROL TARGET ... FAILED',
-                        { t: reason, c: 'err' }], tk, 260);
-                    dbgStatus('err', 'ACTIVATION TARGET MISSING');
-                    if (STATE.attempts >= 1) els.hintDyn.innerHTML = HINT_SECOND;
                 }
-            } catch (e) {
-                if (e !== ABORT) console.error(e);
-            } finally {
-                dbgBusy = false;
-                els.btnRun.disabled = false; els.btnReset.disabled = false;
+            };
+
+            if (bifrostPoll) clearInterval(bifrostPoll);
+            bifrostPoll = setInterval(checkFix, 150);
+
+            try {
+                await dlog(['> REPAIR MODE ENGAGED',
+                    '> BIFROST CONTROL MARKUP LOADED — FAULT DETECTED',
+                    '> INTERFACE STATUS: DEGRADED · #bifrost-activate TARGET MISSING IN DOM'], tk, 300);
+            } catch (e) { if (e !== ABORT) throw e; }
+
+            const bypassBtn = document.getElementById('btn-bypass');
+            if (bypassBtn) {
+                bypassBtn.onclick = () => {
+                    const btn = document.getElementById('bifrost-actvate');
+                    if (btn) btn.id = 'bifrost-activate';
+                    checkFix();
+                };
             }
         }
+        function closeDebug() {
+            if (bifrostPoll) { clearInterval(bifrostPoll); bifrostPoll = null; }
+            els.debug.classList.remove('on');
+            setTimeout(() => { els.debug.hidden = true; }, 480);
+        }
         function resetDebug() {
+            if (bifrostPoll) { clearInterval(bifrostPoll); bifrostPoll = null; }
             els.debug.classList.remove('on', 'jolt');
             els.debug.hidden = true;
-            els.code.value = DEBUG_SNIPPET;
-            els.code.scrollTop = 0;
-            syncGutter();
+            const fixedBtn = document.getElementById('bifrost-activate');
+            if (fixedBtn) fixedBtn.id = 'bifrost-actvate';
+            STATE.challengeSolved = false;
+            STATE.activationUnlocked = false;
             els.dbgLog.innerHTML = '';
             dbgStatus('err', 'ACTIVATION TARGET MISSING');
-            els.hintDyn.innerHTML = HINT_FIRST;
             els.dbgFootStatus.textContent = 'GATE: OFFLINE — INTERFACE: DEGRADED';
             els.miniText.textContent = 'OFFLINE';
             elsMini.classList.remove('online');
-            els.btnRun.disabled = false; els.btnReset.disabled = false;
-            dbgBusy = false;
         }
 
         /* ============================================================
@@ -4358,7 +4348,8 @@
         bindUI();
         FX.init();
         requestAnimationFrame(() => layoutRunway());
-        setTimeout(layoutRunway, 700);   // re-measure once fonts/layout settle
+        window.openDebug = openDebug;
+        window.resetMission = resetMission;
         storyMain();
     </script>
 </body>

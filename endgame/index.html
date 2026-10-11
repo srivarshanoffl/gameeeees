@@ -173,7 +173,7 @@
                     <div id="ash"></div>
 
                     <!-- THE broken element: everything of the primary pathway lives in here -->
-                    <div class="cosmic-energy" id="cosmicEnergy" aria-hidden="true">
+                    <div class="cosmic-energy" id="cosmicEnergy" data-resonance="disabled" aria-hidden="true">
                         <svg viewBox="0 0 1600 900" aria-hidden="true">
                             <defs>
                                 <linearGradient id="beamGrad" x1="407" y1="455" x2="1280" y2="500"
@@ -218,25 +218,20 @@
 
         <section id="debug" role="alert" tabindex="-1" aria-labelledby="dbgTitle">
             <h2 id="dbgTitle">COSMIC ENERGY PATHWAY OFFLINE</h2>
-            <p class="lead">The snap succeeded — but the energy pathway is not being rendered.</p>
-            <p class="mission"><strong>MISSION</strong> — Inspect the <code>.cosmic-energy</code> element and correct
-                the CSS property that keeps it hidden. The game is paused; no timer will advance it.</p>
+            <p class="lead">The snap succeeded — but the cosmic energy pathway is unlinked in the DOM.</p>
+            <p class="mission"><strong>MISSION</strong> — Inspect the <code>#cosmicEnergy</code> element and change HTML attribute <code>data-resonance="disabled"</code> to <code>data-resonance="active"</code>. The game is paused; no timer will advance it.</p>
             <ol>
-                <li>Open DevTools: <code>F12</code> or <code>Ctrl+Shift+I</code> (macOS: <code>Cmd+Option+I</code>).
+                <li>Open DevTools: <code>F12</code> or <code>Ctrl+Shift+I</code> (macOS: <code>Cmd+Option+I</code>).</li>
+                <li>In the Elements panel, find <code>&lt;div id="cosmicEnergy"&gt;</code>.</li>
+                <li>Change attribute <code>data-resonance="disabled"</code> to <code>data-resonance="active"</code>.</li>
+                <li>Alternatively, in the Console tab execute:
+                    <div style="background:#050914; padding:6px 10px; border-radius:4px; color:#5cf5a6; font-size:12px; margin-top:4px;">document.getElementById('cosmicEnergy').setAttribute('data-resonance', 'active');</div>
                 </li>
-                <li>In the Elements panel, press <code>Ctrl+F</code> (macOS: <code>Cmd+F</code>) and search
-                    <code>cosmic-energy</code>.</li>
-                <li>Inspect its Styles / Computed rules.</li>
-                <li>Find the actual <code>display: none</code> declaration.</li>
-                <li>Disable or remove it — or change it to <code>display: block</code>.</li>
-                <li>Return here. The sequence resumes once the real computed style changes.</li>
             </ol>
             <p class="small">This challenge requires a regular desktop browser with Developer Tools access.</p>
-            <p class="pulse"><i></i>POLLING COMPUTED STYLE · 250&nbsp;MS</p>
-            <!-- BYPASS (temporary testing aid — remove this block for the final build) -->
+            <p class="pulse"><i></i>POLLING DOM ATTRIBUTE · 200&nbsp;MS</p>
             <div class="bypassRow">
-                <button id="bypass" class="cta mini" type="button">Bypass check (testing)</button>
-                <span class="bypassHint">applies the fix and resumes</span>
+                <button id="bypass" class="cta mini" type="button">⚡ Test Bypass (Auto-Fix)</button>
             </div>
         </section>
 

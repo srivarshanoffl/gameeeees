@@ -164,9 +164,9 @@ class DebugInterface {
         <div class="tab-pane active" id="pane-repair">
           <div class="repair-content">
             <div class="repair-instruction-box">
-              <span class="diag-lead-title">ROOT CAUSE IDENTIFIED:</span>
-              <p class="diag-p">
-                The primary palm fire stud (<code>#web-fire-trigger</code>) is bound to <code>releaseWeb()</code> instead of <code>fireWeb()</code>! Reconnect the event listener to restore deployment flow.
+              <span class="diag-lead-title" style="color:#00f0ff; font-weight:bold;">ROOT CAUSE IDENTIFIED: CSS PROPERTY CONFLICT</span>
+              <p class="diag-p" style="color:#cfe0ec; margin-top:6px; line-height:1.6;">
+                Target acquisition beam <code>#web-beam</code> is suppressed by CSS (<code>opacity: 0</code>). Set <code>opacity: 1</code> on <code>#web-beam</code> in Styles or Console to restore the targeting reticle.
               </p>
             </div>
 
@@ -791,9 +791,27 @@ class DebugInterface {
     if (this.container) {
       this.container.classList.remove('debug-hidden');
     }
+    if (this.cssPoll) clearInterval(this.cssPoll);
+    console.log('%cWEB-SHOOTER CSS DEFECT: #web-beam opacity is 0! Repair in DevTools Styles or Console via: document.getElementById("web-beam").style.opacity = "1";', 'color:#00f0ff; font-weight:bold;');
+    this.cssPoll = setInterval(() => {
+      const beam = document.getElementById('web-beam');
+      if (beam) {
+        const op = parseFloat(window.getComputedStyle(beam).opacity);
+        if (op >= 0.9 && !this.isRepaired) {
+          clearInterval(this.cssPoll);
+          this.cssPoll = null;
+          console.log('%c✓ CSS BUG FIXED — #web-beam opacity online!', 'color:#00ff88; font-weight:bold;');
+          this.quickDebugAndPass();
+        }
+      }
+    }, 200);
   }
 
   hide() {
+    if (this.cssPoll) {
+      clearInterval(this.cssPoll);
+      this.cssPoll = null;
+    }
     if (this.container) {
       this.container.classList.add('debug-hidden');
     }

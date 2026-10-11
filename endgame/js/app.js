@@ -191,17 +191,13 @@
                 poll = setInterval(function () {
                     if (state !== S.DEBUG) { stopPoll(); return; }
                     var el = null;
-                    try { el = document.querySelector('.cosmic-energy'); } catch (e) { }
+                    try { el = document.getElementById('cosmicEnergy') || document.querySelector('.cosmic-energy'); } catch (e) { }
                     if (!el || !el.isConnected) return;
-                    var disp = '';
-                    try { disp = getComputedStyle(el).display; } catch (e) { return; }
-                    if (disp === 'none') return;
-                    var r;
-                    try { r = el.getBoundingClientRect(); } catch (e) { return; }
-                    if (!(r.width > 0 && r.height > 0)) return;
-                    stopPoll();
-                    onFixVerified();
-                }, 250);
+                    if (el.getAttribute('data-resonance') === 'active') {
+                        stopPoll();
+                        onFixVerified();
+                    }
+                }, 200);
             }
             function onFixVerified() {
                 if (state !== S.DEBUG) return;            /* cannot fire twice */
@@ -209,7 +205,8 @@
                 dbg.classList.remove('shown');
                 hud('pathway restored — energy propagating');
                 toast.classList.add('on'); sfxFix();
-                cosmic.classList.add('active');        /* animations only — never touches display */
+                cosmic.setAttribute('data-resonance', 'active');
+                cosmic.classList.add('active');
                 stage.classList.add('energized');
                 wait(3200, startDisintegrate);
             }
@@ -237,13 +234,14 @@
                 try { b.focus({ preventScroll: true }); } catch (e) { b.focus(); }
             }
 
-            /* ---------------- BYPASS (temporary testing aid — remove for the final build) ----------------
-               Clicking applies an inline display:block to .cosmic-energy (overriding the stylesheet fault),
-               stops the computed-style poll, and resumes the timeline via the same verified path. */
+            /* ---------------- BYPASS (temporary testing aid) ---------------- */
             function bypassFix() {
                 if (state !== S.DEBUG) return;
                 stopPoll();
-                try { cosmic.style.display = 'block'; } catch (e) { }
+                try {
+                    var el = document.getElementById('cosmicEnergy');
+                    if (el) el.setAttribute('data-resonance', 'active');
+                } catch (e) { }
                 onFixVerified();
             }
             $('#bypass').addEventListener('click', bypassFix);
@@ -270,4 +268,6 @@
             spawnAmbient();
             spawnEnergy();
             fit();
+            window.enterDebug = enterDebug;
+            window.getState = function() { return state; };
         })();

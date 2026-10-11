@@ -2384,6 +2384,7 @@
 
                     <!-- ================= IRON MAN ================= -->
                     <div id="im" class="chr im-enter">
+                        <div id="arc-reactor" data-vitals="offline"></div>
                         <div id="im-move">
                             <div class="pose-inner">
                                 <div class="bob">
@@ -2505,28 +2506,27 @@
         </button>
 
         <div id="debug-overlay">
-            <div class="d-head"><span class="d-dot"></span>SYSTEM FAILURE: TONY STARK — VITAL FUNCTIONS OFFLINE</div>
+            <div class="d-head"><span class="d-dot"></span>SYSTEM FAILURE: TONY STARK — LIFE SUPPORT OFFLINE</div>
             <div class="d-sub">
-                Critical CSS syntax fault in impact shockwave stylesheet <code>#bug-css</code>.
-                The animation property references <code>shieldImpact</code>, but defined keyframes are named <code>shield-impact</code>.
+                Critical HTML DOM defect in Iron Man armor systems: <code>#arc-reactor</code> vital status node is disconnected (<code>data-vitals="offline"</code>).
             </div>
             <div class="d-instruction">
                 <b>DEVTOOLS REPAIR PROCEDURE:</b>
                 <ol style="margin: 8px 0 8px 18px; line-height: 1.6;">
                     <li>Press <code>F12</code> or right-click → <b>Inspect</b> to open Developer Tools.</li>
-                    <li>In the <b>Console</b> tab, repair the stylesheet by executing:
+                    <li>In the <b>Elements</b> panel, locate <code>&lt;div id="arc-reactor"&gt;</code> and change attribute <code>data-vitals="offline"</code> to <code>data-vitals="online"</code>.</li>
+                    <li>Alternatively, open the <b>Console</b> tab and execute:
                         <div class="d-code-snippet">
-                            document.getElementById('bug-css').textContent = '.shield-impact { animation: shield-impact 800ms ease-out forwards; }';
+                            document.getElementById('arc-reactor').setAttribute('data-vitals', 'online');
                         </div>
                     </li>
-                    <li>Alternatively, select <code>.shield-impact</code> in the Elements panel and fix <code>animation-name</code> to <code>shield-impact</code>.</li>
                 </ol>
             </div>
             <div id="debug-status" class="d-status hint">
-                ⚡ Awaiting CSS correction via Developer Tools Console…
+                ⚡ Awaiting DOM attribute correction via Developer Tools…
             </div>
             <div class="d-actions">
-                <button id="bypass-btn" class="btn-bypass" title="Fix CSS and bypass challenge for testing">⚡ TEST BYPASS (AUTO-FIX)</button>
+                <button id="bypass-btn" class="btn-bypass" title="Fix DOM attribute and bypass challenge for testing">⚡ TEST BYPASS (AUTO-FIX)</button>
             </div>
         </div>
 
@@ -2963,26 +2963,17 @@
                 debugStatus = byId('debug-status');
 
             let pollTimer = null;
-            function animsOk() {
-                try {
-                    for (const a of impactEl.getAnimations()) {
-                        if (a.animationName === 'shield-impact') return true;
-                    }
-                    const cs = window.getComputedStyle(impactEl);
-                    if (cs && cs.animationName === 'shield-impact') return true;
-                    if (impactEl.style.animation && impactEl.style.animation.includes('shield-impact')) return true;
-                    const bugText = byId('bug-css').textContent;
-                    if (bugText && /animation\s*:\s*shield-impact\b/i.test(bugText)) return true;
-                } catch (e) { }
-                return false;
+            function domOk() {
+                const arc = byId('arc-reactor');
+                return arc && arc.getAttribute('data-vitals') === 'online';
             }
 
             function startPolling() {
                 stopPolling();
                 pollTimer = setInterval(() => {
                     if (S.debugResolved) { stopPolling(); return; }
-                    if (animsOk()) {
-                        resolveCssFix();
+                    if (domOk()) {
+                        resolveDomFix();
                     }
                 }, 200);
             }
@@ -2991,13 +2982,13 @@
                 if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
             }
 
-            function resolveCssFix() {
+            function resolveDomFix() {
                 if (S.debugResolved) return;
                 S.debugResolved = true;
-                S.resolvedBy = 'css-fix';
+                S.resolvedBy = 'dom-fix';
                 stopPolling();
-                console.log('%cCSS BUG FIXED — @keyframes "shield-impact" restored on .shield-impact! Tony Stark vital functions online.', 'color:#4caf50; font-weight:bold;');
-                debugStatus.textContent = 'CSS ERROR FIXED — VITAL FUNCTIONS RESTORED';
+                console.log('%cHTML BUG FIXED — #arc-reactor data-vitals="online" restored! Tony Stark life support online.', 'color:#4caf50; font-weight:bold;');
+                debugStatus.textContent = 'HTML BUG FIXED — LIFE SUPPORT ONLINE';
                 debugStatus.className = 'd-status good';
                 if (bypassBtn) bypassBtn.disabled = true;
                 A.reboot();
@@ -3007,16 +2998,11 @@
                 }, 1200);
             }
 
-            impactEl.addEventListener('animationstart', e => {
-                if (e.animationName === 'shield-impact') {
-                    resolveCssFix();
-                }
-            });
-
-            window.fixBug = window.fixCssBug = function () {
-                byId('bug-css').textContent = '.shield-impact { animation: shield-impact 800ms ease-out forwards; }';
+            window.fixBug = window.fixHtmlBug = function () {
+                byId('arc-reactor')?.setAttribute('data-vitals', 'online');
             };
             window.enterDebugPause = enterDebugPause;
+            window.resetAll = resetAll;
             window.S = S;
 
             function enterDebugPause() {
@@ -3025,8 +3011,8 @@
                 slate('DIAGNOSTIC · SYSTEM FAILURE');
                 later(showOverlay, 400);
                 startPolling();
-                console.log('%cSYSTEM FAILURE: TONY STARK — VITAL FUNCTIONS OFFLINE. Awaiting CSS bug correction…', 'color:#ff5252; font-weight:bold;');
-                console.log('%cDIAGNOSTIC — .shield-impact: animation "shieldImpact" failed to start (no matching @keyframes "shield-impact"). Repair in Console/DevTools via:\n  document.getElementById("bug-css").textContent = ".shield-impact { animation: shield-impact 800ms ease-out forwards; }";', 'color:#e5a13a;');
+                console.log('%cSYSTEM FAILURE: TONY STARK — LIFE SUPPORT OFFLINE. Awaiting HTML DOM attribute correction…', 'color:#ff5252; font-weight:bold;');
+                console.log('%cDIAGNOSTIC — #arc-reactor data-vitals is "offline". Repair in Console/DevTools via:\n  document.getElementById("arc-reactor").setAttribute("data-vitals", "online");', 'color:#e5a13a;');
             }
 
             function showOverlay() {
@@ -3195,13 +3181,10 @@
                 byId('rep-light').classList.remove('on');
                 flashEl.classList.remove('go');
                 stopPolling();
-                byId('bug-css').textContent = '.shield-impact {\n            animation: shieldImpact 800ms ease-out forwards;\n        }';
-                try { impactEl.getAnimations().forEach(a => a.cancel()); } catch (e) { }
-                impactEl.removeAttribute('style');
-                impactEl.className = 'shield-impact';
+                byId('arc-reactor')?.setAttribute('data-vitals', 'offline');
 
                 if (bypassBtn) bypassBtn.disabled = false;
-                debugStatus.textContent = '⚡ Awaiting CSS correction via Developer Tools Console…';
+                debugStatus.textContent = '⚡ Awaiting DOM attribute correction via Developer Tools…';
                 debugStatus.className = 'd-status hint';
 
                 captionEl.classList.remove('on'); hidePrompt();
@@ -3215,14 +3198,14 @@
             if (bypassBtn) {
                 bypassBtn.addEventListener('click', () => {
                     if (S.debugResolved) return;
-                    byId('bug-css').textContent = '.shield-impact {\n            animation: shield-impact 800ms ease-out forwards;\n        }';
-                    resolveCssFix();
+                    byId('arc-reactor')?.setAttribute('data-vitals', 'online');
+                    resolveDomFix();
                 });
             }
             window.addEventListener('keydown', e => {
                 if ((e.key === 'b' || e.key === 'B') && overlayEl.classList.contains('on') && !S.debugResolved) {
-                    byId('bug-css').textContent = '.shield-impact {\n            animation: shield-impact 800ms ease-out forwards;\n        }';
-                    resolveCssFix();
+                    byId('arc-reactor')?.setAttribute('data-vitals', 'online');
+                    resolveDomFix();
                 }
             });
             let cueIdx = 0, lastT = performance.now();

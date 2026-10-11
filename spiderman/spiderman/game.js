@@ -842,6 +842,8 @@ class MainGameScene extends Phaser.Scene {
   }
 
   restartMission() {
+    const beam = document.getElementById('web-beam');
+    if (beam) beam.style.opacity = '0';
     if (this.debugUI) this.debugUI.destroy();
     if (this.webShooterDiag) this.webShooterDiag.destroy();
     if (this.inputMgr) this.inputMgr.destroy();

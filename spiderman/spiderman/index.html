@@ -7,6 +7,21 @@
   <meta name="description" content="Cinematic 2.5D superhero browser game where Spider-Man chases a fast-moving falcon across Manhattan, diagnoses an unexpected web shooter event handler malfunction, and executes a high-speed web capture.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🕷️</text></svg>">
   <link rel="stylesheet" href="styles.css">
+  <style id="webshooter-css">
+    #web-beam {
+      opacity: 0;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 4px;
+      height: 4px;
+      background: #00f0ff;
+      box-shadow: 0 0 12px #00f0ff;
+      pointer-events: none;
+      z-index: 50;
+      transition: opacity 0.3s ease;
+    }
+  </style>
 </head>
 <body>
   <noscript>
@@ -15,6 +30,7 @@
     </div>
   </noscript>
   <div id="game-wrapper">
+    <div id="web-beam" class="web-beam"></div>
     <!-- Main Phaser WebGL Canvas Host Container -->
     <main id="game-container" role="main" aria-label="Spider-Man Web Chase Game Viewport"></main>
 

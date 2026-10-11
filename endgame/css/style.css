@@ -992,13 +992,16 @@
    ============================================================ */
         .cosmic-energy {
             display: none;
-            /* <- the fault. Fix it in real DevTools */
             position: absolute;
             inset: 0;
             pointer-events: none;
             z-index: 11;
             mix-blend-mode: screen;
             overflow: visible;
+        }
+
+        .cosmic-energy[data-resonance="active"] {
+            display: block;
         }
 
         .cosmic-energy svg {

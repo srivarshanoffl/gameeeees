@@ -1657,25 +1657,22 @@
                         <path
                             d="M12 7.8V5.5M8.5 9.5 6.8 7.8M15.5 9.5l1.7-1.7M6.8 13H4.4M19.6 13h-2.4M8.5 16.5l-1.7 1.7M15.5 16.5l1.7 1.7" />
                     </svg>
-                    <b>CSS DEBUGGER</b><span class="file">ring-engine.css</span>
+                    <b>CSS ORBIT ENGINE DEFECT</b><span class="file">#ring-css</span>
                 </div>
-                <pre class="code"><span class="c-com">/* ten-rings orbit engine — core */</span>
-<span class="c-kw">@keyframes</span> <span class="c-sel">ring-orbit</span> {
-  from { transform: <span class="c-fn">rotate</span>(<span class="c-num">0deg</span>); }
-  to   { transform: <span class="c-fn">rotate</span>(<span class="c-num">360deg</span>); }
-}
-
-<span class="c-sel">.ring</span> {
-  animation: <input id="name-edit" value="ringOrbit" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="animation-name value"> <span class="c-num">2s</span> linear infinite;
-}</pre>
-                <div id="d-status" class="p-status err"></div>
-                <div class="btnrow">
-                    <button id="apply-btn" type="button">APPLY FIX</button>
-                    <button id="hint-btn" type="button">HINT</button>
-                    <button id="bypass-btn" type="button">BYPASS</button>
+                <div style="padding:12px; font-size:13px; color:#d6e6f4; line-height:1.6;">
+                    <p style="margin:0 0 8px 0; color:#ff9d3c; font-weight:bold;">⚡ TEN RINGS ORBIT FAILURE</p>
+                    <p style="margin:0 0 8px 0;">The Ten Rings have lost orbital synchronization because <code>.ring</code> references <code>ringOrbit</code> instead of matching <code>@keyframes ring-orbit</code>.</p>
+                    <ol style="margin:0 0 8px 0; padding-left:18px; line-height:1.6;">
+                        <li>Open DevTools: press <kbd>F12</kbd> or right-click &rarr; <em>Inspect</em>.</li>
+                        <li>In the <strong>Styles</strong> panel or <strong>Console</strong>, update <code>animation-name</code> on <code>.ring</code> to <code>ring-orbit</code>:
+                            <pre style="background:#09121d; padding:6px 10px; border-radius:4px; color:#5cf5a6; font-size:12px; margin-top:4px; overflow-x:auto;">document.getElementById('ring-css').textContent = document.getElementById('ring-css').textContent.replace('ringOrbit', 'ring-orbit');</pre>
+                        </li>
+                    </ol>
                 </div>
-                <p id="d-hint" hidden>Hint: keyframes names are kebab-case and case-sensitive — mirror the @keyframes
-                    block above exactly.</p>
+                <div id="d-status" class="p-status err">⚡ Awaiting CSS correction via Developer Tools…</div>
+                <div class="btnrow" style="margin-top:10px;">
+                    <button id="bypass-btn" type="button" style="border-color:#5cf5a6; color:#5cf5a6;">⚡ TEST BYPASS (AUTO-FIX)</button>
+                </div>
             </div>
 
             <div id="pattern-mode" hidden>
@@ -1889,32 +1886,25 @@
         function flash(txt) { $('#flash-text').textContent = txt; const f = $('#flash'); f.classList.remove('show'); void f.offsetWidth; f.classList.add('show'); }
 
         /* ---------------- CSS debugging challenge ---------------- */
-        function tryFix() {
-            if (phase !== 'debug') return;
-            const raw = nameIn.value.trim();
-            const v = raw.replace(/\s+/g, '').toLowerCase();
-            if (v === 'ring-orbit') {
-                /* the actual page stylesheet is repaired — the animation-name now resolves */
-                $('#ring-css').textContent = BUGGY_CSS.replace('ringOrbit', 'ring-orbit');
-                nameIn.value = 'ring-orbit'; nameIn.disabled = true;
-                $('#apply-btn').disabled = true; $('#hint-btn').disabled = true;
-                const b = $('#bypass-btn'); if (b) b.disabled = true;
-                succeedFix();
-            } else {
-                fails++;
-                setStatus(dStatus, `\u2717 '${raw || '\u2026'}' does not match any @keyframes \u2014 orbit engine offline.`, false);
-                shakePanel(); dHint.hidden = fails < 2; sfx.err();
-                nameIn.focus(); nameIn.select();
-            }
+        let shangchiPoll = null;
+        function startShangchiPoll() {
+            if (shangchiPoll) clearInterval(shangchiPoll);
+            console.log('%cTEN RINGS CSS BUG: @keyframes "ring-orbit" does not match animation: ringOrbit on .ring! Fix in DevTools via:\n  document.getElementById("ring-css").textContent = document.getElementById("ring-css").textContent.replace("ringOrbit", "ring-orbit");', 'color:#ff9d3c; font-weight:bold;');
+            shangchiPoll = setInterval(() => {
+                if (phase !== 'debug') return;
+                const ringEl = document.querySelector('.ring');
+                const animName = ringEl ? getComputedStyle(ringEl).animationName : '';
+                const styleText = $('#ring-css')?.textContent || '';
+                if (animName === 'ring-orbit' || (styleText && /animation\s*:\s*ring-orbit\b/i.test(styleText))) {
+                    if (shangchiPoll) { clearInterval(shangchiPoll); shangchiPoll = null; }
+                    succeedFix();
+                }
+            }, 200);
         }
         function bypassCode() {
             if (phase !== 'debug') return;
-            nameIn.value = 'ring-orbit';
-            nameIn.style.width = '11ch';
-            nameIn.disabled = true;
+            if (shangchiPoll) { clearInterval(shangchiPoll); shangchiPoll = null; }
             $('#ring-css').textContent = BUGGY_CSS.replace('ringOrbit', 'ring-orbit');
-            $('#apply-btn').disabled = true;
-            $('#hint-btn').disabled = true;
             const b = $('#bypass-btn'); if (b) b.disabled = true;
             succeedFix();
         }
@@ -2147,13 +2137,13 @@
             clearTimeout(fixTimer); clearTimeout(gaTimer);
             cancelAnimationFrame(finalRAF);
             blastPulse = 0;
+            if (shangchiPoll) clearInterval(shangchiPoll);
             $('#ring-css').textContent = BUGGY_CSS; /* restore the genuine bug */
-            nameIn.disabled = false; nameIn.value = 'ringOrbit'; nameIn.style.width = '10ch';
-            $('#apply-btn').disabled = false; $('#hint-btn').disabled = false;
             const b = $('#bypass-btn'); if (b) b.disabled = false;
             const s = $('#skip-pattern-btn'); if (s) s.disabled = false;
-            fails = 0; dHint.hidden = true;
-            setStatus(dStatus, "\u2717 'ringOrbit' does not match any @keyframes \u2014 orbit engine offline.", false);
+            fails = 0;
+            setStatus(dStatus, '⚡ Awaiting CSS correction via Developer Tools…', false);
+            startShangchiPoll();
             phase = 'debug'; stageIdx = 0; attempt = []; locked = false;
             SEQS[1] = null; SEQS[2] = null;
             body.className = 'broken';
@@ -2243,20 +2233,13 @@
         }
 
         /* ---------------- wiring ---------------- */
-        $('#apply-btn').addEventListener('click', tryFix);
-        $('#hint-btn').addEventListener('click', () => { dHint.hidden = false; });
         $('#bypass-btn').addEventListener('click', bypassCode);
         $('#continue-btn').addEventListener('click', dismissMissionPanel);
         $('#skip-pattern-btn').addEventListener('click', skipPattern);
-        nameIn.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); tryFix(); } });
-        nameIn.addEventListener('input', () => { nameIn.style.width = Math.max(9, nameIn.value.length + 1) + 'ch'; });
         $$('.gbtn').forEach(b => b.addEventListener('click', () => onGroup(b.dataset.g)));
         $('#restart').addEventListener('click', restart);
         document.addEventListener('keydown', e => {
-            if (phase === 'debug') {
-                if (e.key === 'Enter' && document.activeElement !== nameIn) tryFix();
-                return;
-            }
+            if (phase === 'debug') return;
             const g = { '1': 'outer', '2': 'middle', '3': 'inner', 'o': 'outer', 'm': 'middle', 'i': 'inner' }[e.key.toLowerCase()];
             if (g) onGroup(g);
         });
@@ -2304,8 +2287,10 @@
         resetWorld();
         fit();
         requestAnimationFrame(zTick);
-        requestAnimationFrame(fitMissionUI);
-        setStatus(dStatus, "\u2717 'ringOrbit' does not match any @keyframes \u2014 orbit engine offline.", false);
+        setStatus(dStatus, '⚡ Awaiting CSS correction via Developer Tools…', false);
+        startShangchiPoll();
+        window.restartShangchi = restart;
+        window.getPhase = () => phase;
     </script>
 </body>
 

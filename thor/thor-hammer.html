@@ -680,65 +680,35 @@
       <div class="debug-terminal-window">
         <div class="terminal-header">
           <div class="terminal-title">
-            <span>⚡ ASGARDIAN BIFROST TERMINAL &bull; ANOMALY INSPECTOR</span>
+            <span>⚡ ASGARDIAN BIFROST TERMINAL &bull; CSS DIAGNOSTIC HUD</span>
           </div>
           <button class="terminal-close-btn" id="terminalCloseBtn" title="Close Inspector">&times;</button>
         </div>
         <div class="terminal-body">
           <div class="terminal-briefing">
-            <b>CSS SYNTAX DEFECT DETECTED IN <code>bifrost-ward.css</code>:</b><br>
-            A CSS layout syntax defect is disrupting the Bifrost Ward matrix and blocking Thor's celestial Thunder power. Inspect Line 4 below, select the valid CSS layout declaration, and deploy the patch to summon thunder and evacuate civilians.
-          </div>
-          <div class="code-editor-box" id="codeEditorBox">
-            <div class="code-line" data-line="1">
-              <span class="line-num">1</span>
-              <span class="line-code"><span class="comm">/* Asgardian Bifrost Barrier Defenses */</span></span>
+            <div style="font-weight: 700; color: #f59e0b; margin-bottom: 8px; font-size: 15px; letter-spacing: 0.5px;">
+              ⚠️ ANOMALOUS STYLESHEET DETECTED: <code>#bifrost-ward-css</code>
             </div>
-            <div class="code-line" data-line="2">
-              <span class="line-num">2</span>
-              <span class="line-code"><span class="kw">.bifrost-ward</span> {</span>
+            <p style="margin: 0 0 10px 0; line-height: 1.5; color: #e2e8f0;">
+              A CSS layout syntax defect is disrupting the Bifrost Ward matrix (<code>.bifrost-ward</code>) and blocking Thor's celestial Thunder power. The layout property has an invalid CSS declaration (<code>display: center;</code>) that fails rendering.
+            </p>
+            <div style="background: rgba(0,0,0,0.4); border-left: 3px solid #f59e0b; padding: 10px 14px; border-radius: 4px; font-family: monospace; font-size: 13px; color: #94a3b8; margin-bottom: 12px;">
+              <span style="color: #64748b;">// Target:</span> <span style="color: #38bdf8;">style#bifrost-ward-css &bull; .bifrost-ward</span><br>
+              <span style="color: #ef4444;">- display: center;</span> <span style="color: #64748b;">/* Invalid CSS property value */</span><br>
+              <span style="color: #22c55e;">+ display: flex;</span> <span style="color: #64748b;">/* Standard flexbox layout required */</span>
             </div>
-            <div class="code-line" data-line="3">
-              <span class="line-num">3</span>
-              <span class="line-code">&nbsp;&nbsp;<span class="prop">position</span>: <span class="val">relative</span>;</span>
-            </div>
-            <div class="code-line" data-line="4" id="bugLine">
-              <span class="line-num">4</span>
-              <span class="line-code">&nbsp;&nbsp;<span class="prop">display</span>: <span class="val" id="codeLine4Val">center</span>; <span class="comm">/* &larr; Invalid CSS property value */</span></span>
-            </div>
-            <div class="code-line" data-line="5">
-              <span class="line-num">5</span>
-              <span class="line-code">&nbsp;&nbsp;<span class="prop">width</span>: <span class="val">100%</span>;</span>
-            </div>
-            <div class="code-line" data-line="6">
-              <span class="line-num">6</span>
-              <span class="line-code">&nbsp;&nbsp;<span class="prop">border-radius</span>: <span class="val">8px</span>;</span>
-            </div>
-            <div class="code-line" data-line="7">
-              <span class="line-num">7</span>
-              <span class="line-code">}</span>
-            </div>
-          </div>
-
-          <div class="fix-selection-area" id="fixSelectionArea" style="display: none;">
-            <div class="fix-prompt">SELECT VALID REPLACEMENT CSS DECLARATION FOR LINE <span id="selectedLineNum">4</span>:</div>
-            <div class="fix-options-grid" id="fixOptionsGrid">
-              <button class="fix-option-btn" data-fix="flex">
-                <span>[A]</span> <code>display: flex;</code> &mdash; (Valid CSS Flexible Box Layout)
-              </button>
-              <button class="fix-option-btn" data-fix="middle">
-                <span>[B]</span> <code>display: middle;</code> &mdash; (Invalid CSS value)
-              </button>
-              <button class="fix-option-btn" data-fix="centered">
-                <span>[C]</span> <code>display: centered;</code> &mdash; (Invalid CSS value)
-              </button>
+            <div style="font-size: 13px; color: #cbd5e1; line-height: 1.5; background: rgba(30, 41, 59, 0.5); padding: 10px 14px; border-radius: 6px;">
+              <b>🛠️ HOW TO FIX USING BROWSER DEVTOOLS:</b><br>
+              1. Press <code>F12</code> or right-click to open <b>Developer Tools</b>.<br>
+              2. Inspect element <code>#bifrostWard</code> in the <b>Elements</b> tab &rarr; update <code>display</code> to <code>flex</code> in the Styles panel.<br>
+              3. Alternatively, in the <b>Console</b> tab, execute:<br>
+              <code style="color: #38bdf8; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 3px; display: inline-block; margin-top: 4px;">document.getElementById('bifrostWard').style.display = 'flex';</code>
             </div>
           </div>
 
           <div class="terminal-footer">
-            <div class="terminal-status-msg" id="terminalStatusMsg">Click Line 4 to inspect the syntax defect...</div>
-            <button class="overlay-btn secondary" id="terminalSolveBtn" style="font-size: 12px; padding: 6px 14px; border-color: #00ff88; color: #00ff88;">⚡ AUTO-SOLVE</button>
-            <button class="verify-patch-btn" id="verifyPatchBtn" disabled>⚡ VERIFY &amp; DEPLOY PATCH</button>
+            <div class="terminal-status-msg" id="terminalStatusMsg">⚡ Listening for live CSS correction (display: flex)...</div>
+            <button class="overlay-btn secondary" id="terminalSolveBtn" style="font-size: 12px; padding: 6px 14px; border-color: #00ff88; color: #00ff88;">⚡ AUTO-PATCH</button>
           </div>
         </div>
       </div>
@@ -867,70 +837,57 @@
       }
 
       // Victory Restart Button
-      const victoryRestartBtn = document.getElementById('victoryRestartBtn');
-      if (victoryRestartBtn) {
-        victoryRestartBtn.addEventListener('click', () => {
-          document.getElementById('victoryOverlay').classList.add('hidden');
-          resetTerminalUI();
+      function restartThor() {
+        document.getElementById('victoryOverlay')?.classList.add('hidden');
+        resetTerminalUI();
+        if (game) {
           game.reset();
           game.state = 'START';
+        }
 
-          // Restore Bifrost live CSS defect for the new session
-          const styleEl = document.getElementById('bifrost-ward-css');
-          if (styleEl) {
-            styleEl.textContent = '/* Asgardian Bifrost Barrier Defenses */\n.bifrost-ward {\n  position: relative;\n  display: center;\n  width: 100%;\n  border-radius: 8px;\n}';
-          }
+        // Restore Bifrost live CSS defect for the new session
+        const styleEl = document.getElementById('bifrost-ward-css');
+        if (styleEl) {
+          styleEl.textContent = '/* Asgardian Bifrost Barrier Defenses */\n.bifrost-ward {\n  position: relative;\n  display: center;\n  width: 100%;\n  border-radius: 8px;\n}';
+        }
+        const testEl = document.getElementById('bifrostWard');
+        if (testEl) testEl.style.display = '';
 
-          // Return cleanly to starting screen with mission panel and CONTINUE button
-          const panel = document.getElementById('missionPanel');
-          const continueBtn = document.getElementById('continueBtn');
-          const primaryActionBtn = document.getElementById('primaryActionBtn');
-          if (panel) {
-            panel.classList.remove('hidden', 'exiting');
-          }
-          if (continueBtn) {
-            continueBtn.style.display = 'inline-flex';
-            continueBtn.style.opacity = '1';
-            continueBtn.style.transform = '';
-            continueBtn.style.pointerEvents = 'auto';
-          }
-          if (primaryActionBtn) {
-            primaryActionBtn.style.display = 'none';
-          }
-        });
+        // Return cleanly to starting screen with mission panel and CONTINUE button
+        const panel = document.getElementById('missionPanel');
+        const continueBtn = document.getElementById('continueBtn');
+        const primaryActionBtn = document.getElementById('primaryActionBtn');
+        if (panel) {
+          panel.classList.remove('hidden', 'exiting');
+        }
+        if (continueBtn) {
+          continueBtn.style.display = 'inline-flex';
+          continueBtn.style.opacity = '1';
+          continueBtn.style.transform = '';
+          continueBtn.style.pointerEvents = 'auto';
+        }
+        if (primaryActionBtn) {
+          primaryActionBtn.style.display = 'none';
+        }
+      }
+      window.restartThor = restartThor;
+
+      const victoryRestartBtn = document.getElementById('victoryRestartBtn');
+      if (victoryRestartBtn) {
+        victoryRestartBtn.addEventListener('click', restartThor);
       }
 
       // =========================================================================
-      // INTERACTIVE DEBUGGING TERMINAL & DEVTOOLS BUG OBSERVATION
+      // DEVTOOLS CSS CHALLENGE LOGIC & RUNTIME OBSERVATION
       // =========================================================================
-      let selectedLine = null;
-      let selectedFix = null;
-      const codeLines = document.querySelectorAll('.code-line');
-      const fixSelectionArea = document.getElementById('fixSelectionArea');
-      const selectedLineNumSpan = document.getElementById('selectedLineNum');
-      const fixOptionBtns = document.querySelectorAll('.fix-option-btn');
-      const verifyPatchBtn = document.getElementById('verifyPatchBtn');
       const terminalStatusMsg = document.getElementById('terminalStatusMsg');
       const terminalCloseBtn = document.getElementById('terminalCloseBtn');
-      const codeLine4Val = document.getElementById('codeLine4Val');
+      const terminalSolveBtn = document.getElementById('terminalSolveBtn');
 
       function resetTerminalUI() {
-        selectedLine = null;
-        selectedFix = null;
-        codeLines.forEach(l => l.classList.remove('selected', 'error-target'));
-        fixOptionBtns.forEach(b => b.classList.remove('active'));
-        if (fixSelectionArea) fixSelectionArea.style.display = 'none';
-        if (verifyPatchBtn) {
-          verifyPatchBtn.disabled = true;
-          verifyPatchBtn.textContent = '⚡ VERIFY & DEPLOY PATCH';
-        }
         if (terminalStatusMsg) {
           terminalStatusMsg.className = 'terminal-status-msg';
-          terminalStatusMsg.textContent = 'Click Line 4 to inspect the syntax defect...';
-        }
-        if (codeLine4Val) {
-          codeLine4Val.textContent = 'center';
-          codeLine4Val.style.color = '#f59e0b';
+          terminalStatusMsg.textContent = '⚡ Listening for live CSS correction (display: flex)...';
         }
       }
 
@@ -944,18 +901,14 @@
           styleEl.textContent = styleEl.textContent.replace(/display\s*:\s*center/i, 'display: flex');
         }
 
-        // Update terminal visual editor
-        if (codeLine4Val) {
-          codeLine4Val.textContent = 'flex';
-          codeLine4Val.style.color = '#00ff88';
+        const testEl = document.getElementById('bifrostWard');
+        if (testEl) {
+          testEl.style.display = 'flex';
         }
-        if (verifyPatchBtn) {
-          verifyPatchBtn.disabled = true;
-          verifyPatchBtn.textContent = '✓ BUG FIXED';
-        }
+
         if (terminalStatusMsg) {
           terminalStatusMsg.className = 'terminal-status-msg success';
-          terminalStatusMsg.innerHTML = '⚡ <b>BUG FIXED!</b> <code>display: flex;</code> deployed! Celestial Thunder unlocked!';
+          terminalStatusMsg.innerHTML = '⚡ <b>CORRECTION DETECTED!</b> <code>display: flex</code> restored! Celestial Thunder unlocked!';
         }
 
         // Trigger Thor power restoration sequence
@@ -998,70 +951,6 @@
       window.fixThorBug = applyBugFixSuccess;
       window.solveCodingBug = applyBugFixSuccess;
 
-      // Code line click handling
-      codeLines.forEach(lineEl => {
-        lineEl.addEventListener('click', () => {
-          window.soundFX.init();
-          window.soundFX.play('click');
-          codeLines.forEach(l => l.classList.remove('selected'));
-          lineEl.classList.add('selected');
-
-          const lineNum = parseInt(lineEl.getAttribute('data-line'), 10);
-          selectedLine = lineNum;
-          if (selectedLineNumSpan) selectedLineNumSpan.textContent = lineNum;
-
-          if (lineNum === 4) {
-            fixSelectionArea.style.display = 'flex';
-            terminalStatusMsg.className = 'terminal-status-msg';
-            terminalStatusMsg.textContent = "Line 4: 'display: center;' is an invalid CSS property value. Select the valid replacement:";
-            if (selectedFix) {
-              verifyPatchBtn.disabled = false;
-            }
-          } else {
-            fixSelectionArea.style.display = 'none';
-            selectedFix = null;
-            fixOptionBtns.forEach(b => b.classList.remove('active'));
-            verifyPatchBtn.disabled = true;
-            terminalStatusMsg.className = 'terminal-status-msg';
-            terminalStatusMsg.textContent = `Line ${lineNum} contains valid syntax. Investigate the invalid layout declaration on Line 4!`;
-          }
-        });
-      });
-
-      // Fix option buttons handling
-      fixOptionBtns.forEach(optBtn => {
-        optBtn.addEventListener('click', () => {
-          window.soundFX.init();
-          window.soundFX.play('click');
-          fixOptionBtns.forEach(b => b.classList.remove('active'));
-          optBtn.classList.add('active');
-          selectedFix = optBtn.getAttribute('data-fix');
-
-          if (selectedLine === 4) {
-            verifyPatchBtn.disabled = false;
-            terminalStatusMsg.className = 'terminal-status-msg';
-            terminalStatusMsg.textContent = `Ready to verify patch: display: ${selectedFix};`;
-          }
-        });
-      });
-
-      // Verify and Deploy Patch
-      verifyPatchBtn.addEventListener('click', () => {
-        window.soundFX.init();
-        if (selectedLine === 4 && selectedFix === 'flex') {
-          applyBugFixSuccess();
-        } else {
-          terminalStatusMsg.className = 'terminal-status-msg error';
-          if (selectedLine !== 4) {
-            terminalStatusMsg.textContent = '✗ VERIFICATION FAILED: Selected line does not have a defect. Check Line 4!';
-          } else {
-            terminalStatusMsg.innerHTML = `✗ VERIFICATION FAILED: <code>display: ${selectedFix};</code> is NOT valid CSS!`;
-          }
-          window.soundFX.play('hit');
-          if (game) game.shake(6, 0.2);
-        }
-      });
-
       // Terminal close button
       if (terminalCloseBtn) {
         terminalCloseBtn.addEventListener('click', () => {
@@ -1069,12 +958,9 @@
         });
       }
 
-      // In-terminal auto-solve button
-      const terminalSolveBtn = document.getElementById('terminalSolveBtn');
+      // In-terminal auto-patch button
       if (terminalSolveBtn) {
         terminalSolveBtn.addEventListener('click', () => {
-          selectedLine = 4;
-          selectedFix = 'flex';
           applyBugFixSuccess();
         });
       }
@@ -1082,8 +968,6 @@
       // Shortcut keys: 'B' or 'S' to auto-solve for quick verification
       window.addEventListener('keydown', (e) => {
         if ((e.code === 'KeyB' || e.code === 'KeyS') && !e.ctrlKey && !e.metaKey && game && game.progressionState === 'powerLocked') {
-          selectedLine = 4;
-          selectedFix = 'flex';
           applyBugFixSuccess();
         }
       });

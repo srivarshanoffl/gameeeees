@@ -2390,7 +2390,7 @@
         let fixDetected = false;
         let bypassUsed = false;
         let resumedOnce = false;
-        let lastStart = 0;
+        let lastStart = -1000;
 
         const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -2813,6 +2813,14 @@
         function checkAnimations() {
             if (fixDetected) return;
             if (state !== State.DEBUG_PAUSE && state !== State.STRANGE_PREPARES && state !== State.SPELL_FAILURE) return;
+            const css = bugStyle ? bugStyle.textContent : '';
+            if (/dimensional-transition/i.test(css) || (world && /dimensional-transition/i.test(window.getComputedStyle(world).animationName))) {
+                if (!world.classList.contains('spell-transition')) {
+                    world.classList.add('spell-transition');
+                }
+                onFixDetected();
+                return;
+            }
             let anims = null;
             try {
                 if (typeof world.getAnimations === 'function') anims = world.getAnimations();
@@ -2937,6 +2945,7 @@
             if (fixDetected) { resumeSequence(false); return; }
             setState(State.DEBUG_PAUSE);
             show(debugPanel);
+            if (pollId === null) pollId = setInterval(checkAnimations, 250);
             if (ENABLE_TEST_BYPASS && bypassBtn && !bypassUsed) show(bypassBtn);
             const evOnly = typeof world.getAnimations !== 'function';
             setDebugStatus(evOnly ? 'AWAITING GENUINE ANIMATION… (EVENT-BASED DETECTION)' : 'AWAITING GENUINE ANIMATION…', 'wait');
@@ -3112,6 +3121,8 @@
                 FX.draw();
             });
         }
+        window.beginRun = beginRun;
+        window.enterDebugPause = enterDebugPause;
     </script>
 </body>
 
