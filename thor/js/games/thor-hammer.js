@@ -97,8 +97,8 @@ class ThorHammerGame extends GameEngine {
     if (this.thor) {
       this.thor.x = this.vWidth * 0.16;
       this.thor.y = this.groundY;
-      this.thor.handX = this.thor.x + 50;
-      this.thor.handY = this.groundY - 110;
+      this.thor.handX = this.thor.x + 70;
+      this.thor.handY = this.groundY - 155;
     }
 
     if (this.hammer && this.hammer.state === 'IDLE' && this.thor) {
@@ -163,14 +163,14 @@ class ThorHammerGame extends GameEngine {
 
     this.groundY = this.vHeight * 0.82;
 
-    // 1. DOMINANT, ENLARGED THOR (1.65× Scale)
+    // 1. DOMINANT, ENLARGED THOR (Massive Cinematic Superhero Scale)
     this.thor = {
       x: this.vWidth * 0.16,
       y: this.groundY,
-      width: 210,
-      height: 240,
-      handX: this.vWidth * 0.16 + 50,
-      handY: this.groundY - 110,
+      width: 300,
+      height: 345,
+      handX: this.vWidth * 0.16 + 70,
+      handY: this.groundY - 155,
       hp: 100,
       maxHp: 100
     };
@@ -187,7 +187,7 @@ class ThorHammerGame extends GameEngine {
       speed: 0,
       maxRange: this.vWidth * 1.2,
       distanceTraveled: 0,
-      radius: 20,
+      radius: 28,
       rotation: 0
     };
 
@@ -200,16 +200,16 @@ class ThorHammerGame extends GameEngine {
     this.particles = [];
     this.activeStrikes = [];
 
-    // 3. DISTINCT ASGARDIAN TRAITORS
+    // 3. DISTINCT ASGARDIAN TRAITORS (Enlarged Menacing Warriors)
     this.traitors = [
       {
         id: 't1',
         name: 'Cyber Vanguard',
         x: this.vWidth * 0.50,
         y: this.groundY,
-        w: 140,
-        h: 175,
-        r: 38,
+        w: 195,
+        h: 245,
+        r: 52,
         hp: 1,
         maxHp: 1,
         eliminated: false,
@@ -224,9 +224,9 @@ class ThorHammerGame extends GameEngine {
         name: 'Shadow Operative',
         x: this.vWidth * 0.69,
         y: this.groundY,
-        w: 140,
-        h: 175,
-        r: 38,
+        w: 195,
+        h: 245,
+        r: 52,
         hp: 1,
         maxHp: 1,
         eliminated: false,
@@ -241,9 +241,9 @@ class ThorHammerGame extends GameEngine {
         name: 'Dread Warlord',
         x: this.vWidth * 0.86,
         y: this.groundY,
-        w: 155,
-        h: 185,
-        r: 44,
+        w: 220,
+        h: 265,
+        r: 58,
         hp: 1,
         maxHp: 1,
         eliminated: false,
@@ -255,14 +255,14 @@ class ThorHammerGame extends GameEngine {
       }
     ];
 
-    // 4. CAPTURED CIVILIANS HELD DIRECTLY IN FRONT AS HUMAN SHIELDS
+    // 4. CAPTURED CIVILIANS HELD DIRECTLY IN FRONT AS HUMAN SHIELDS (Enlarged)
     this.civilians = [
       {
         id: 'civ1',
         name: 'Lady Sigrid',
         x: this.vWidth * 0.50,
-        y: this.groundY - 20,
-        r: 25,
+        y: this.groundY - 15,
+        r: 36,
         tunicColor: '#1e824c',
         hairColor: '#5c3a21',
         fade: 1.0,
@@ -275,8 +275,8 @@ class ThorHammerGame extends GameEngine {
         id: 'civ2',
         name: 'Sage Harek',
         x: this.vWidth * 0.69,
-        y: this.groundY - 20,
-        r: 25,
+        y: this.groundY - 15,
+        r: 36,
         tunicColor: '#2980b9',
         hairColor: '#d35400',
         fade: 1.0,
@@ -289,8 +289,8 @@ class ThorHammerGame extends GameEngine {
         id: 'civ3',
         name: 'Villager Bryn',
         x: this.vWidth * 0.86,
-        y: this.groundY - 20,
-        r: 25,
+        y: this.groundY - 15,
+        r: 36,
         tunicColor: '#8e44ad',
         hairColor: '#f39c12',
         fade: 1.0,
@@ -963,11 +963,11 @@ class ThorHammerGame extends GameEngine {
     const drawX = -drawW / 2;
     const drawY = -drawH + 12 + bob;
 
-    // Ground contact shadow
+    // Ground contact shadow (Enlarged)
     ctx.save();
     ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
     ctx.beginPath();
-    ctx.ellipse(0, 4, 70, 16, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, 6, 95, 22, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
 
@@ -1069,11 +1069,11 @@ class ThorHammerGame extends GameEngine {
       const drawX = -t.w / 2;
       const drawY = -t.h + bob;
 
-      // Realistic soft ground contact shadow
+      // Realistic soft ground contact shadow (Enlarged)
       ctx.save();
       ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
       ctx.beginPath();
-      ctx.ellipse(0, 2, 50, 14, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, 4, 72, 20, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
 
@@ -1147,23 +1147,25 @@ class ThorHammerGame extends GameEngine {
       if (civ.fade <= 0) continue;
 
       ctx.save();
-      ctx.translate(civ.x, civ.y);
+      // Frightened trembling shiver while captive
+      const tremble = civ.evacuating ? 0 : (Math.sin(this.lightningTimer * 38 + civ.x) * 2.2);
+      ctx.translate(civ.x + tremble, civ.y);
       ctx.globalAlpha = civ.fade;
 
-      const bob = Math.sin(this.lightningTimer * 4 + civ.x) * 2;
+      const bob = Math.sin(this.lightningTimer * 4 + civ.x) * 2 + (civ.evacuating ? 0 : Math.cos(this.lightningTimer * 26) * 1.2);
 
-      // Soft ground ambient occlusion shadow
+      // Soft ground ambient occlusion shadow (Enlarged)
       ctx.save();
       ctx.fillStyle = 'rgba(0, 0, 0, 0.72)';
       ctx.beginPath();
-      ctx.ellipse(0, 8, 36, 11, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, 10, 52, 16, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
 
-      // Bifrost Celestial Evacuation Beam (when evacuating)
+      // Bifrost Celestial Evacuation Beam (when evacuating - Enlarged)
       if (civ.evacuating) {
         ctx.save();
-        const beamW = 76 + Math.sin(this.lightningTimer * 20) * 12;
+        const beamW = 115 + Math.sin(this.lightningTimer * 20) * 16;
         const beamGrad = ctx.createLinearGradient(0, -this.vHeight, 0, 10);
         beamGrad.addColorStop(0, 'rgba(255, 215, 0, 0.9)');
         beamGrad.addColorStop(0.35, 'rgba(0, 240, 255, 0.75)');
@@ -1188,36 +1190,36 @@ class ThorHammerGame extends GameEngine {
         ctx.restore();
       }
 
-      // Protective captive aura
+      // Protective captive aura (Enlarged)
       const pulse = Math.sin(this.lightningTimer * 5) * 3;
-      const haloGrad = ctx.createRadialGradient(0, -42, 10, 0, -42, civ.r + 32 + pulse);
+      const haloGrad = ctx.createRadialGradient(0, -60, 12, 0, -60, civ.r + 48 + pulse);
       if (civ.evacuating) {
         haloGrad.addColorStop(0, 'rgba(255, 215, 0, 0.45)');
         haloGrad.addColorStop(0.6, 'rgba(0, 240, 255, 0.3)');
         haloGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
       } else {
-        haloGrad.addColorStop(0, 'rgba(255, 23, 68, 0.28)');
-        haloGrad.addColorStop(0.6, 'rgba(255, 138, 128, 0.16)');
+        haloGrad.addColorStop(0, 'rgba(255, 23, 68, 0.32)');
+        haloGrad.addColorStop(0.6, 'rgba(255, 138, 128, 0.18)');
         haloGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
       }
       ctx.fillStyle = haloGrad;
       ctx.beginPath();
-      ctx.arc(0, -42, civ.r + 32 + pulse, 0, Math.PI * 2);
+      ctx.arc(0, -60, civ.r + 48 + pulse, 0, Math.PI * 2);
       ctx.fill();
 
-      // Captive energy bond rings
-      ctx.strokeStyle = civ.evacuating ? '#00f0ff' : 'rgba(255, 23, 68, 0.8)';
-      ctx.lineWidth = 2.8;
+      // Captive energy bond rings (Enlarged)
+      ctx.strokeStyle = civ.evacuating ? '#00f0ff' : 'rgba(255, 23, 68, 0.85)';
+      ctx.lineWidth = 3.2;
       ctx.shadowColor = civ.evacuating ? '#00f0ff' : '#ff1744';
-      ctx.shadowBlur = 14;
+      ctx.shadowBlur = 16;
       ctx.beginPath();
-      ctx.ellipse(0, -36 + bob, civ.r + 14, 15, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, -50 + bob, civ.r + 20, 22, 0, 0, Math.PI * 2);
       ctx.stroke();
 
-      // REALISTIC ASGARDIAN CIVILIAN CHARACTER SPRITE
+      // REALISTIC ASGARDIAN CIVILIAN CHARACTER SPRITE (Enlarged Scale: 185px)
       const cImg = this.civilianImages[i % this.civilianImages.length];
       if (cImg && cImg.complete && cImg.naturalWidth > 0) {
-        const drawH = 125;
+        const drawH = 185;
         const aspect = cImg.naturalWidth / cImg.naturalHeight;
         const drawW = drawH * aspect;
         ctx.drawImage(cImg, -drawW / 2, -drawH + 16 + bob, drawW, drawH);
@@ -1439,18 +1441,18 @@ class ThorHammerGame extends GameEngine {
 
     // High-Resolution Metallic Uru Mjölnir Sprite
     if (this.mjolnirImg && this.mjolnirImg.complete && this.mjolnirImg.naturalWidth > 0) {
-      const drawW = 52;
-      const drawH = 70;
+      const drawW = 75;
+      const drawH = 100;
       // Position hammer head centered on coordinates
       ctx.drawImage(this.mjolnirImg, -drawW / 2, -drawH * 0.28, drawW, drawH);
     } else {
       // High-quality fallback rendering
       ctx.fillStyle = '#4a2e18';
-      ctx.fillRect(-5, -5, 10, 32);
+      ctx.fillRect(-7, -7, 14, 44);
       ctx.fillStyle = '#8395a7';
-      ctx.fillRect(-18, -16, 36, 24);
+      ctx.fillRect(-25, -22, 50, 32);
       ctx.fillStyle = '#00f0ff';
-      ctx.fillRect(-5, -9, 10, 10);
+      ctx.fillRect(-7, -12, 14, 14);
     }
 
     ctx.restore();
